@@ -3,21 +3,22 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const wordBanksData = require('./words'); // 1. 引入分离的词库
+const wordBanksData = require('./words');
 
 const app = express();
 const PORT = 3003;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(__dirname)); // 托管静态文件
+// 托管静态文件
+app.use(express.static(__dirname));
 
-// 2. 核心接口：获取词库
+// 获取词库
 app.get('/api/wordbanks', (req, res) => {
     res.json(wordBanksData);
 });
 
-// --- 数据库逻辑 ---
+// --- 数据库 ---
 const dbPath = path.resolve(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) console.error('DB Error:', err.message);
@@ -48,13 +49,14 @@ db.serialize(() => {
         totalTime INTEGER DEFAULT 0,
         totalWords INTEGER DEFAULT 0,
         maxCombo INTEGER DEFAULT 0,
-        max_wpm INTEGER DEFAULT 0,
+        max_wpm INTEGER DEFAULT 0, 
         totalPerfectRounds INTEGER DEFAULT 0,
         totalKeystrokes INTEGER DEFAULT 0,
         unlocked_badges TEXT DEFAULT '[]'
     )`);
 });
 
+// 首页路由
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -66,6 +68,7 @@ app.post('/api/login', (req, res) => {
 
     db.get("SELECT * FROM users WHERE name = ?", [name], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
+        
         if (row) {
             if (avatar && row.avatar !== avatar) {
                 db.run("UPDATE users SET avatar = ? WHERE id = ?", [avatar, row.id]);
@@ -86,7 +89,7 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// 获取所有用户
+// 获取用户列表
 app.get('/api/users', (req, res) => {
     db.all("SELECT id, name, avatar FROM users ORDER BY created_at DESC", (err, rows) => {
         if (err) return res.status(500).json([]);
@@ -94,7 +97,7 @@ app.get('/api/users', (req, res) => {
     });
 });
 
-// 保存成绩
+// 保存
 app.post('/api/save', (req, res) => {
     const { userId, record, stats } = req.body;
     db.serialize(() => {
@@ -112,7 +115,7 @@ app.post('/api/save', (req, res) => {
     });
 });
 
-// 获取历史
+// 历史
 app.get('/api/history/:userId', (req, res) => {
     db.all("SELECT * FROM history WHERE user_id = ? ORDER BY id DESC LIMIT 50", [req.params.userId], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -122,7 +125,11 @@ app.get('/api/history/:userId', (req, res) => {
 
 // 排行榜
 app.get('/api/leaderboard', (req, res) => {
-    const query = `SELECT u.name, u.avatar, s.max_wpm, s.totalWords, s.totalPerfectRounds FROM stats s JOIN users u ON s.user_id = u.id`;
+    const query = `
+        SELECT u.name, u.avatar, s.max_wpm, s.totalWords, s.totalPerfectRounds
+        FROM stats s
+        JOIN users u ON s.user_id = u.id
+    `;
     db.all(query, (err, rows) => {
         if (err) return res.status(500).json([]);
         res.json(rows);
