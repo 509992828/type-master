@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Type Master: Family Edition</title>
+    <title>小奶狗打字机</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,240 +14,100 @@
 
     <style>
         :root {
-            --bg-color: #11111b;
-            --key-bg: #313244;
-            --key-shadow: #181825;
-            --text-color: #cdd6f4;
-            --sub-text-color: #7f849c; 
-            --correct-color: #a6e3a1; 
-            --wrong-color: #f38ba8;   
-            --highlight-color: #f9a450; 
-            --fire-core: #f9e2af;
-            --fire-outer: #f38ba8;
-            --hand-stroke: #6c7086;
-            --hand-fill: rgba(108, 112, 134, 0.05);
+            --bg-color: #11111b; --key-bg: #313244; --text-color: #cdd6f4;
+            --highlight-color: #f9a450; --correct-color: #a6e3a1; --wrong-color: #f38ba8;
             --modal-bg: rgba(24, 24, 37, 0.98);
         }
+        body { background: var(--bg-color); color: var(--text-color); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
+        #app-wrapper { width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
 
-        html, body {
-            height: 100%; width: 100%; overflow: hidden; position: fixed;
-            background-color: var(--bg-color); color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace; margin: 0; padding: 0;
-            user-select: none; -webkit-tap-highlight-color: transparent;
-        }
-
-        #app-wrapper {
-            width: 100%; height: 100%; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; overflow: hidden; position: relative;
-        }
-
-        /* --- Login Screen --- */
-        #login-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(17, 17, 27, 1); z-index: 2000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        
-        .user-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 20px; max-width: 600px; width: 90%; margin-bottom: 30px;
-        }
-
+        #login-screen { position: absolute; inset: 0; background: #11111b; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .user-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 800px; margin-bottom: 40px; }
         .user-card {
-            background: #1e1e2e; border: 2px solid #313244; border-radius: 12px;
-            padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s;
-            display: flex; flex-direction: column; align-items: center;
+            background: #1e1e2e; border: 2px solid #313244; border-radius: 16px; width: 100px; padding: 15px;
+            display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s;
         }
-        .user-card:hover { border-color: var(--highlight-color); transform: translateY(-5px); }
-        .user-avatar { font-size: 2.5rem; margin-bottom: 10px; }
-        .user-name { font-weight: bold; color: #fff; }
+        .user-card:hover { border-color: var(--highlight-color); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(249,164,80,0.3); }
+        .user-avatar-big { font-size: 3rem; margin-bottom: 10px; }
+        .user-name { font-weight: bold; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 
-        .new-user-form { display: flex; gap: 10px; margin-top: 20px; }
-        .user-input { padding: 10px; border-radius: 8px; border: 1px solid #45475a; background: #181825; color: #fff; outline: none; }
-        .add-user-btn { padding: 10px 20px; background: var(--highlight-color); color: #1e1e2e; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .new-user-box { background: #181825; padding: 20px; border-radius: 16px; border: 1px solid #313244; text-align: center; }
+        .avatar-selector { display: flex; gap: 10px; margin: 15px 0; justify-content: center; }
+        .avatar-option { font-size: 1.5rem; cursor: pointer; opacity: 0.5; transition: 0.2s; filter: grayscale(1); }
+        .avatar-option.selected { opacity: 1; transform: scale(1.3); filter: grayscale(0); }
+        .user-input { padding: 10px; border-radius: 8px; border: 1px solid #45475a; background: #313244; color: #fff; text-align: center; width: 150px; }
+        .add-btn { background: var(--highlight-color); border: none; padding: 10px 20px; border-radius: 8px; color: #1e1e2e; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-        /* --- Start Screen --- */
-        #start-screen { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(17, 17, 27, 0.98); z-index: 999; display: none; 
-            flex-direction: column; align-items: center; justify-content: center; 
-        }
+        #start-screen { position: absolute; inset: 0; background: rgba(17,17,27,0.98); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .top-bar { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
+        .icon-btn { background: rgba(255,255,255,0.1); border: 1px solid #45475a; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+        .icon-btn:hover { background: rgba(255,255,255,0.2); }
+        .pk-btn { border-color: var(--highlight-color); color: var(--highlight-color); }
+
+        .current-user-badge { position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 10px; font-size: 1.2rem; }
         
-        .section-title { font-size: 0.9rem; color: #6c7086; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
-
-        .recent-badges { display: flex; gap: 15px; margin-bottom: 30px; justify-content: center; min-height: 80px; }
-        .mini-badge {
-            background: #1e1e2e; width: 60px; height: 60px; border-radius: 50%;
-            border: 2px solid #313244; display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.2s; cursor: pointer;
-        }
-        .mini-badge:hover { transform: scale(1.1); border-color: var(--highlight-color); }
-        .mini-badge.empty { border: 2px dashed #313244; color: #313244; font-size: 1.2rem; cursor: default; }
-        .mini-badge .tooltip {
-            position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%);
-            background: #000; color: #fff; padding: 4px 8px; border-radius: 4px; 
-            font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
+        .recent-badges { display: flex; gap: 15px; margin-bottom: 30px; min-height: 80px; }
+        .mini-badge { width: 60px; height: 60px; background: #1e1e2e; border: 2px solid #313244; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; position: relative; cursor: pointer; }
+        .mini-badge:hover { border-color: var(--highlight-color); transform: scale(1.1); }
+        .mini-badge .tooltip { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); background: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.2s; }
         .mini-badge:hover .tooltip { opacity: 1; }
 
-        .control-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; width: 300px; }
-        .word-select, .file-input-label { padding: 12px 20px; font-size: 1.1rem; background: var(--key-bg); color: #fff; border: 2px solid var(--highlight-color); border-radius: 8px; cursor: pointer; outline: none; text-align: center; transition: all 0.2s; }
-        .file-input-label:hover, .word-select:hover { background: #45475a; }
-        #custom-file-input { display: none; }
+        .control-group { margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; width: 300px; }
+        .word-select { padding: 12px; background: var(--key-bg); color: #fff; border: 2px solid var(--highlight-color); border-radius: 8px; font-size: 1.1rem; text-align: center; }
+        .start-btn { padding: 15px 50px; font-size: 1.5rem; background: var(--highlight-color); border: none; border-radius: 12px; cursor: pointer; font-weight: bold; box-shadow: 0 0 20px rgba(249,164,80,0.4); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%{transform:scale(1);} 50%{transform:scale(1.05);} 100%{transform:scale(1);} }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2500; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--modal-bg); width: 600px; max-width: 90%; border-radius: 20px; padding: 30px; border: 1px solid #45475a; max-height: 80vh; overflow-y: auto; position: relative; }
+        .close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #6c7086; font-size: 1.5rem; cursor: pointer; }
+
+        .leaderboard-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #313244; padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; color: #6c7086; font-size: 1.1rem; cursor: pointer; padding: 5px 10px; }
+        .tab-btn.active { color: #fff; border-bottom: 2px solid var(--highlight-color); }
+        .rank-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #313244; }
+        .rank-num { font-size: 1.2rem; font-weight: bold; width: 40px; color: #6c7086; }
+        .rank-num.top1 { color: #f9e2af; text-shadow: 0 0 10px #f9e2af; }
+        .rank-avatar { font-size: 1.5rem; margin-right: 15px; }
+        .rank-name { flex: 1; color: #fff; font-weight: bold; }
+        .rank-score { font-family: monospace; font-size: 1.2rem; color: var(--highlight-color); }
+
+        .display-area { width: 80%; height: 140px; background: #181825; border-radius: 16px; display: flex; align-items: center; overflow: hidden; position: relative; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+        #display-track { display: flex; align-items: flex-end; padding-left: 50%; transition: transform 0.2s cubic-bezier(0.2,0,0.2,1); }
+        .word-block { display: flex; flex-direction: column; align-items: center; margin-right: 40px; }
+        .word-en { font-size: 3rem; display: flex; }
+        .word-zh { font-size: 1.2rem; color: #6c7086; margin-top: 5px; }
+        .char { padding: 0 2px; border-radius: 4px; }
+        .char.correct { color: var(--correct-color); }
+        .char.wrong { color: var(--wrong-color); text-decoration: line-through; }
+        .char.current { background: rgba(255,255,255,0.15); border-bottom: 3px solid var(--highlight-color); }
+
+        .keyboard-container { position: relative; padding: 30px; background: #0d0d15; border-radius: 20px; border: 3px solid #313244; }
+        .keyboard { display: flex; flex-direction: column; gap: 8px; }
+        .row { display: flex; justify-content: center; gap: 6px; }
+        .key { width: 50px; height: 50px; background: var(--key-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #a6adc8; border-bottom: 4px solid #181825; transition: 0.1s; cursor: pointer; }
+        .key.active { transform: translateY(4px); border-bottom: 0; background: var(--highlight-color); color: #1e1e2e; }
+        .key.space { width: 300px; font-size: 0.8rem; color: rgba(255,255,255,0.15); font-family: "Microsoft YaHei", sans-serif; display: flex; align-items: center; justify-content: center;}
+        .key.space.active { color: rgba(0,0,0,0.4); }
+
+        .stats-bar { display: flex; gap: 30px; margin-bottom: 20px; color: #6c7086; }
+        .stat-value { font-size: 1.5rem; color: #fff; font-weight: bold; }
         
-        .btn-group { display: flex; gap: 15px; }
-        .start-btn, .action-btn, .logout-btn { padding: 12px 25px; font-size: 1.1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: transform 0.1s; }
-        .start-btn { background: var(--highlight-color); color: #1e1e2e; box-shadow: 0 0 20px rgba(249, 164, 80, 0.4); font-size: 1.3rem; padding: 15px 40px;}
-        .action-btn { background: #313244; color: #cdd6f4; border: 1px solid #45475a; }
-        .logout-btn { background: transparent; color: #f38ba8; border: 1px solid #f38ba8; font-size: 0.9rem; margin-top: 20px; }
-        .start-btn:active, .action-btn:active { transform: scale(0.95); }
-        .action-btn:hover { border-color: var(--highlight-color); color: #fff; }
-        .logout-btn:hover { background: #f38ba8; color: #1e1e2e; }
-
-        /* 游戏界面退出按钮 */
-        .game-exit-btn {
-            position: absolute; top: 20px; right: 20px;
-            background: transparent; border: 1px solid #45475a; color: #6c7086;
-            padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;
-            transition: all 0.2s; z-index: 100;
-        }
-        .game-exit-btn:hover { border-color: #f38ba8; color: #f38ba8; }
-
-        /* --- Effects --- */
-        .key-ripple {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            border-radius: 50%; pointer-events: none; width: 0; height: 0;
-            border: 2px solid var(--highlight-color);
-            box-shadow: 0 0 10px var(--highlight-color), inset 0 0 10px var(--highlight-color);
-            opacity: 1; animation: tech-ripple 0.5s cubic-bezier(0, 0.2, 0.5, 1) forwards; z-index: 100;
-        }
-        body.on-fire .key-ripple { border-color: var(--fire-core); box-shadow: 0 0 15px var(--fire-outer), inset 0 0 10px var(--fire-core); }
-        @keyframes tech-ripple { 0% { width: 20px; height: 20px; opacity: 0.8; border-width: 4px; } 100% { width: 150px; height: 150px; opacity: 0; border-width: 0px; } }
-
-        @keyframes rgb-flow {
-            0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; }
-            20% { border-color: #ffff00; box-shadow: 0 0 15px #ffff00; }
-            40% { border-color: #00ff00; box-shadow: 0 0 15px #00ff00; }
-            60% { border-color: #00ffff; box-shadow: 0 0 15px #00ffff; }
-            80% { border-color: #0000ff; box-shadow: 0 0 15px #0000ff; }
-            100% { border-color: #ff00ff; box-shadow: 0 0 15px #ff00ff; }
-        }
-        .keyboard-container { 
-            position: relative; padding: 40px; background: #0d0d15; border-radius: 24px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 3px solid #313244; 
-            margin-bottom: 20px; transition: border-color 0.3s; 
-            -webkit-tap-highlight-color: transparent;
-        }
-        .keyboard-container.rgb-mode { animation: rgb-flow 2s linear infinite; }
-
-        /* --- Modals --- */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2500; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
-        .modal-content { background: var(--modal-bg); width: 800px; max-width: 95%; border-radius: 20px; padding: 30px; border: 1px solid #45475a; box-shadow: 0 20px 60px rgba(0,0,0,0.6); display: flex; flex-direction: column; max-height: 85vh; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #313244; padding-bottom: 15px; }
-        .modal-title { font-size: 1.8rem; color: #fff; display: flex; gap: 15px; align-items: center; font-weight: bold; }
-        .close-btn { background: none; border: none; color: #6c7086; font-size: 2rem; cursor: pointer; line-height: 1; }
-        .close-btn:hover { color: #fff; }
-
-        .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; overflow-y: auto; padding: 10px; flex: 1; }
-        .lib-badge { 
-            background: #181825; border: 2px solid #313244; border-radius: 12px; 
-            padding: 10px; display: flex; flex-direction: column; align-items: center; 
-            text-align: center; transition: all 0.3s; opacity: 0.3; filter: grayscale(1);
-        }
-        .lib-badge.unlocked { 
-            opacity: 1; filter: grayscale(0); border-color: var(--highlight-color); 
-            background: linear-gradient(145deg, #1e1e2e, #252535); box-shadow: 0 5px 15px rgba(0,0,0,0.3); cursor: pointer;
-        }
-        .lib-badge .icon { font-size: 2rem; margin-bottom: 5px; }
-        .lib-badge .name { font-size: 0.8rem; font-weight: bold; color: #fff; margin-bottom: 3px; }
-        .lib-badge .desc { font-size: 0.6rem; color: #6c7086; line-height: 1.1; }
-
-        /* Achievement Unlock & Detail Popups */
-        #achievement-overlay, #detail-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; flex-direction: column; align-items: center; justify-content: center; animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes pop-in { from{transform: scale(0.8); opacity: 0;} to{transform: scale(1); opacity: 1;} }
-        
-        .achievement-card { 
-            background: #1e1e2e; padding: 30px 40px; border-radius: 20px; 
-            border: 3px solid var(--highlight-color); text-align: center; 
-            box-shadow: 0 0 40px rgba(249, 164, 80, 0.3); position: relative; z-index: 3002;
-            transition: all 0.8s ease-in-out; max-width: 90%;
-        }
-        .achievement-icon { font-size: 4rem; display: block; margin-bottom: 15px; animation: bounce 1s infinite; }
-        .achievement-title { font-size: 1.5rem; color: #fff; margin-bottom: 10px; font-weight: bold; }
-        .achievement-desc { font-size: 1rem; color: #cdd6f4; line-height: 1.4; }
-        #fireworks-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3001; }
-
-        /* Tables & Charts */
-        .history-table { width: 100%; border-collapse: collapse; }
-        .history-table th { text-align: left; color: #6c7086; padding: 12px; border-bottom: 1px solid #313244; }
-        .history-table td { padding: 12px; color: #cdd6f4; border-bottom: 1px solid #313244; }
-        .wpm-high { color: var(--correct-color); font-weight: bold; }
-        #chart-container { width: 100%; height: 250px; background: #181825; border-radius: 8px; margin-bottom: 20px; position: relative; }
-        canvas { width: 100%; height: 100%; }
-        
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .history-table th, .history-table td { padding: 10px; text-align: left; border-bottom: 1px solid #313244; }
+        .history-table th { color: #6c7086; }
+        #chart-container { height: 250px; width: 100%; margin-top: 20px; position:relative; }
         .chart-legend { display: flex; justify-content: center; gap: 20px; font-size: 0.8rem; color: #6c7086; margin-top: 10px; }
         .legend-item { display: flex; align-items: center; gap: 5px; }
         .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        .game-exit-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid #45475a; color: #6c7086; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; z-index: 100; }
+        .game-exit-btn:hover { border-color: #f38ba8; color: #f38ba8; }
         
-        .view-toggle-btn { padding: 5px 15px; font-size: 0.9rem; background: #313244; color: #fff; border: 1px solid #45475a; border-radius: 4px; cursor: pointer; }
-        .clear-btn { align-self: flex-end; padding: 8px 15px; background: #f38ba8; color: #1e1e2e; border: none; border-radius: 4px; cursor: pointer; }
-
-        /* Main UI */
-        .stats-bar { display: flex; gap: 40px; margin-bottom: 30px; font-size: 1.1rem; color: #6c7086; margin-top: 20px; }
-        .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .stat-value { color: #fff; font-weight: bold; font-size: 1.6rem; }
-        .combo-container { transition: transform 0.2s; }
-        .combo-container.high-combo { transform: scale(1.2); }
-        .combo-value.fire { color: var(--fire-core); text-shadow: 0 0 15px var(--fire-outer); }
-
-        .display-area { height: 140px; margin-bottom: 40px; background: #181825; padding: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-wrap: nowrap; overflow: hidden; justify-content: flex-start; align-items: center; width: 80%; max-width: 900px; position: relative; mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); }
-        #display-track { display: flex; padding: 0 50vw; transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1); align-items: flex-end; }
-        .word-block { display: flex; flex-direction: column; align-items: center; margin-right: 30px; flex-shrink: 0; }
-        .word-en { font-size: 2.8rem; letter-spacing: 2px; display: flex; }
-        .word-zh { font-size: 1.2rem; color: var(--sub-text-color); margin-top: 10px; font-weight: normal; font-family: "Microsoft YaHei", sans-serif; opacity: 0.8; }
-        .char { padding: 0 2px; border-radius: 4px; transition: all 0.1s; }
-        .char.current { background: rgba(255,255,255,0.1); border-bottom: 4px solid var(--highlight-color); }
-        .char.space-char { color: #585b70; min-width: 1rem; text-align: center; opacity: 1; } 
-        .char.correct { color: var(--correct-color); }
-        .char.wrong { color: var(--wrong-color); text-decoration: line-through; }
-
-        .hands-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; overflow: visible; }
-        .hand-svg { position: absolute; width: 240px; height: 280px; opacity: 0.9; transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1); transform-origin: top left; }
-        .hand-shape { fill: var(--hand-fill); stroke: var(--hand-stroke); stroke-width: 1.2; stroke-linejoin: round; stroke-linecap: round; }
-        .hand-lines { fill: none; stroke: var(--hand-stroke); stroke-width: 0.8; opacity: 0.5; }
-        .finger-tip { fill: #fff; opacity: 0; transition: opacity 0.1s; }
-        .finger-tip.active { opacity: 1; filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px var(--highlight-color)) drop-shadow(0 0 12px var(--highlight-color)); }
-
-        .keyboard { display: flex; flex-direction: column; gap: 10px; }
-        .row { display: flex; justify-content: center; gap: 8px; }
-        .key { width: 58px; height: 58px; background: var(--key-bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; border-bottom: 5px solid var(--key-shadow); color: #a6adc8; transition: transform 0.05s, background 0.1s; position: relative; overflow: hidden; cursor: pointer; }
-        /* 融合署名到空格键 */
-        .key.space { 
-            width: 380px; color: rgba(255,255,255,0.15); 
-            font-size: 0.8rem; font-family: "Microsoft YaHei", sans-serif;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .key.active { transform: translateY(5px); border-bottom: 0px; background: var(--highlight-color); color: #1e1e2e; }
-        /* 保持空格键高亮时文字深色 */
-        .key.space.active { color: rgba(0,0,0,0.4); } 
-        .key.wrong-shake { animation: shake 0.3s; background: var(--wrong-color); color: #1e1e2e; }
-        .key.tab, .key.caps, .key.shift, .key.enter, .key.backspace { font-size: 0.9rem; px: 10px; }
-        .key.tab { width: 90px; align-items: flex-start; padding-left: 15px; }
-        .key.caps { width: 100px; align-items: flex-start; padding-left: 15px; }
-        .key.shift { width: 120px; } .key.enter { width: 110px; } .key.backspace { width: 100px; }
-        
-        body.on-fire { animation: danger-pulse 0.8s infinite alternate; }
-        @keyframes danger-pulse { from { box-shadow: inset 0 0 50px rgba(243, 139, 168, 0.1); } to { box-shadow: inset 0 0 150px rgba(249, 226, 175, 0.3), inset 0 0 30px rgba(255, 0, 0, 0.2); } }
-        .shake-screen { animation: shake-hard 0.2s ease-in-out; }
-        @keyframes shake-hard { 0% { transform: translate(0,0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } 100% { transform: translate(0,0); } }
-        .particle { position: absolute; pointer-events: none; border-radius: 50%; z-index: 1000; mix-blend-mode: screen; }
-        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--correct-color); color: #1e1e2e; padding: 10px 20px; border-radius: 20px; font-weight: bold; opacity: 0; transition: opacity 0.5s; pointer-events: none; z-index: 2000; }
         .toast.show { opacity: 1; }
+        
+        /* 触摸事件不触发缩放 */
+        .key { touch-action: manipulation; }
     </style>
 </head>
 <body>
@@ -256,121 +116,94 @@
         <button class="game-exit-btn" onclick="logout()">✕ 退出登录</button>
 
         <div id="login-screen">
-            <h1 style="color:#fff; margin-bottom: 30px; font-size: 2.5rem;">谁在练习?</h1>
+            <h1 style="color:#fff; margin-bottom: 10px; font-size: 2.5rem;">🐶 小奶狗打字机</h1>
+            <p style="color:#6c7086; margin-bottom: 40px;">Who is typing today?</p>
             <div id="user-grid" class="user-grid"></div>
-            <div class="new-user-form">
-                <input type="text" id="new-username" class="user-input" placeholder="输入名字..." maxlength="10">
-                <button class="add-user-btn" onclick="createNewUser()">+ 新建用户</button>
+            <div class="new-user-box">
+                <div style="color:#fff; margin-bottom:10px;">创建新用户</div>
+                <div class="avatar-selector" id="avatar-selector">
+                    <div class="avatar-option selected">🐶</div>
+                    <div class="avatar-option">🐱</div>
+                    <div class="avatar-option">🦊</div>
+                    <div class="avatar-option">🐼</div>
+                    <div class="avatar-option">🐯</div>
+                    <div class="avatar-option">🦁</div>
+                </div>
+                <input type="text" id="new-username" class="user-input" placeholder="输入名字..." maxlength="8">
+                <br>
+                <button class="add-btn" onclick="createNewUser()">加入大家庭</button>
             </div>
         </div>
 
         <div id="start-screen">
-            <h1 style="color:#fff; margin-bottom: 5px; font-size: 2rem;">打字练习大师</h1>
-            <p id="welcome-text" class="welcome-text" style="margin-bottom:20px; color:var(--highlight-color);">欢迎回来</p>
-            
-            <div class="section-title">最新徽章</div>
-            <div class="recent-badges" id="recent-badges-container">
-                </div>
-
+            <div class="current-user-badge">
+                <span id="current-avatar">🐶</span>
+                <span id="current-name" style="color:#fff; font-weight:bold;">Player</span>
+            </div>
+            <div class="top-bar">
+                <button class="icon-btn pk-btn" onclick="showLeaderboard()">🏆 PK排行榜</button>
+                <button class="icon-btn" onclick="toggleModal('history-modal', true)">📊 我的数据</button>
+                <button class="icon-btn" onclick="toggleModal('badge-modal', true)">🏅 徽章库</button>
+            </div>
+            <h1 style="color:#fff; font-size: 3rem; margin-bottom: 10px;">Type Master</h1>
+            <div class="section-title">我的最新成就</div>
+            <div class="recent-badges" id="recent-badges-container"></div>
             <div class="control-group">
-                <select id="word-bank-select" class="word-select" onchange="handleBankChange()">
-                    <option value="elementary">📚 小学全能词库 (200词)</option>
-                    <option value="python">🐍 Python 编程词库</option>
+                <select id="word-bank-select" class="word-select">
+                    <option value="elementary">加载中...</option>
                 </select>
-                
-                <label for="custom-file-input" class="file-input-label">📂 导入自定义 TXT</label>
-                <input type="file" id="custom-file-input" accept=".txt" onchange="handleFileUpload(this)">
-                <p id="file-status" style="color:var(--highlight-color); font-size:0.9rem; text-align:center; display:none;">文件已加载!</p>
-            </div>
-
-            <div class="btn-group">
-                <button class="start-btn" onclick="startGame()">开始练习</button>
-                <button class="action-btn" onclick="toggleModal('history-modal', true)">📊 报表</button>
-                <button class="action-btn" onclick="toggleModal('badge-modal', true)">🏅 徽章库</button>
-            </div>
-            <button class="logout-btn" onclick="logout()" style="margin-top:15px;">切换用户</button>
-        </div>
-
-        <div id="achievement-overlay" onclick="closeAchievement()">
-            <canvas id="fireworks-canvas"></canvas>
-            <div class="achievement-card">
-                <div class="achievement-icon" id="unlock-icon">🏆</div>
-                <div class="achievement-title">解锁成就！</div>
-                <div class="achievement-desc" id="unlock-desc">恭喜你获得了新的徽章</div>
-                <div style="margin-top:20px; font-size:0.9rem; color:#6c7086;">点击屏幕继续</div>
+                <button class="start-btn" onclick="startGame()">开始打字</button>
             </div>
         </div>
 
-        <div id="detail-overlay" onclick="closeDetailOverlay()">
-            <div class="achievement-card" style="box-shadow: 0 0 30px var(--highlight-color); border-color: #45475a;">
-                <div class="achievement-icon" id="detail-icon" style="animation:none; font-size: 3.5rem;"></div>
-                <div class="achievement-title" id="detail-title"></div>
-                <div class="achievement-desc" id="detail-desc"></div>
-                <div style="margin-top:20px; font-size:0.8rem; color:#6c7086;">点击关闭</div>
+        <div id="achievement-overlay" onclick="closeAchievement()"><canvas id="fireworks-canvas"></canvas><div class="achievement-card"><div class="achievement-icon" id="unlock-icon">🏆</div><div class="achievement-title">解锁成就！</div><div class="achievement-desc" id="unlock-desc"></div><div style="margin-top:20px; font-size:0.9rem; color:#6c7086;">点击屏幕继续</div></div></div>
+        <div id="detail-overlay" onclick="closeDetailOverlay()"><div class="achievement-card" style="box-shadow:0 0 30px var(--highlight-color); border-color:#45475a;"><div class="achievement-icon" id="detail-icon" style="animation:none; font-size:3.5rem;"></div><div class="achievement-title" id="detail-title"></div><div class="achievement-desc" id="detail-desc"></div><div style="margin-top:20px; font-size:0.8rem; color:#6c7086;">点击关闭</div></div></div>
+
+        <div id="leaderboard-modal" class="modal-overlay">
+            <div class="modal-content">
+                <button class="close-btn" onclick="toggleModal('leaderboard-modal', false)">×</button>
+                <h2 style="color:#fff; margin-bottom:20px;">🏆 全服 PK 排行榜</h2>
+                <div class="leaderboard-tabs">
+                    <button class="tab-btn active" onclick="renderLeaderboard('speed')">⚡️ 唯快不破 (WPM)</button>
+                    <button class="tab-btn" onclick="renderLeaderboard('volume')">📚 卷王之王 (字数)</button>
+                    <button class="tab-btn" onclick="renderLeaderboard('accuracy')">🎯 零失误 (完美)</button>
+                </div>
+                <div id="leaderboard-list"></div>
             </div>
         </div>
 
         <div id="history-modal" class="modal-overlay">
             <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title">历史记录 <button class="view-toggle-btn" onclick="toggleViewMode()">📈 切换图表</button></div>
-                    <button class="close-btn" onclick="toggleModal('history-modal', false)">×</button>
-                </div>
-                <div id="history-list-view" style="max-height: 400px; overflow-y: auto;">
-                    <table class="history-table"><thead><tr><th>时间</th><th>字数</th><th>速度</th><th>准确率</th></tr></thead><tbody id="history-list"></tbody></table>
-                </div>
-                <div id="chart-container">
-                    <canvas id="history-chart"></canvas>
-                </div>
-                <div class="chart-legend" id="chart-legend" style="display:none;">
-                    <div class="legend-item"><div class="legend-dot" style="background:#f9a450"></div> WPM (速度)</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#a6e3a1"></div> 准确率 (%)</div>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                    <span style="color:#6c7086; font-size:0.9rem;">* 保存最近50条</span>
-                    <button class="clear-btn" onclick="clearHistory()">清空记录</button>
-                </div>
+                <button class="close-btn" onclick="toggleModal('history-modal', false)">×</button>
+                <h2 style="color:#fff;">📊 历史战绩</h2>
+                <div id="history-list-view"></div>
+                <div id="chart-container"><canvas id="history-chart"></canvas></div>
+                <div class="chart-legend" id="chart-legend"><div class="legend-item"><div class="legend-dot" style="background:#f9a450"></div>WPM</div><div class="legend-item"><div class="legend-dot" style="background:#a6e3a1"></div>准确率</div></div>
             </div>
         </div>
 
         <div id="badge-modal" class="modal-overlay">
             <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title">我的徽章库 (<span id="badge-count">0/30</span>)</div>
-                    <button class="close-btn" onclick="toggleModal('badge-modal', false)">×</button>
-                </div>
-                <div class="badge-grid" id="badge-library-grid">
-                    </div>
+                <button class="close-btn" onclick="toggleModal('badge-modal', false)">×</button>
+                <h2 style="color:#fff;">🏅 徽章展示柜</h2>
+                <div class="badge-grid" id="badge-library-grid"></div>
             </div>
         </div>
 
         <div class="stats-bar">
-            <div class="stat-item"><span class="stat-label">本次练习时间</span><span id="time-elapsed" class="stat-value">00:00</span></div>
-            <div class="stat-item"><span class="stat-label">打字速度 (WPM)</span><span id="wpm" class="stat-value">0</span></div>
-            <div class="stat-item"><span class="stat-label">准确率</span><span id="accuracy" class="stat-value">100%</span></div>
-            <div class="stat-item combo-container" id="combo-container"><span class="stat-label">连击数</span><span id="combo" class="stat-value combo-value">0</span></div>
+            <div class="stat-item"><span>时间</span> <span id="time-elapsed" class="stat-value">00:00</span></div>
+            <div class="stat-item"><span>WPM</span> <span id="wpm" class="stat-value">0</span></div>
+            <div class="stat-item"><span>准确率</span> <span id="accuracy" class="stat-value">100%</span></div>
+            <div class="stat-item"><span>连击</span> <span id="combo" class="stat-value" style="color:var(--highlight-color)">0</span></div>
         </div>
 
         <div class="display-area" id="display-container"><div id="display-track"></div></div>
 
         <div class="keyboard-container" id="keyboard-container">
-            <div class="hands-layer">
-                <svg id="hand-left" class="hand-svg" viewBox="0 0 240 280">
-                    <path class="hand-shape" d="M70,280 L70,180 L50,165 Q30,150 25,130 L20,80 Q18,65 30,60 L45,65 L60,140 L65,140 L60,40 Q58,20 75,20 L90,25 L95,130 L100,130 L105,15 Q105,0 125,0 L140,10 L135,130 L140,130 L155,35 Q160,25 175,35 L180,50 L170,150 L190,175 Q215,195 220,220 L200,280 Z" />
-                    <path class="hand-lines" d="M70,180 C90,170 120,165 160,175" /><path class="hand-lines" d="M60,140 C55,120 55,100 60,80" /><path class="hand-lines" d="M95,130 C90,110 90,90 95,70" /><path class="hand-lines" d="M135,130 C130,110 130,90 135,70" /><path class="hand-lines" d="M170,150 C175,130 180,110 175,90" /><path class="hand-lines" d="M190,175 C200,160 205,140 195,120" />
-                    <circle class="finger-tip pinky" cx="32" cy="90" r="6" /><circle class="finger-tip ring" cx="75" cy="45" r="6" /><circle class="finger-tip middle" cx="122" cy="25" r="6" /><circle class="finger-tip index" cx="168" cy="60" r="6" /><circle class="finger-tip thumb" cx="205" cy="210" r="6" />
-                </svg>
-                <svg id="hand-right" class="hand-svg" viewBox="0 0 240 280" style="transform: scaleX(-1)">
-                    <path class="hand-shape" d="M70,280 L70,180 L50,165 Q30,150 25,130 L20,80 Q18,65 30,60 L45,65 L60,140 L65,140 L60,40 Q58,20 75,20 L90,25 L95,130 L100,130 L105,15 Q105,0 125,0 L140,10 L135,130 L140,130 L155,35 Q160,25 175,35 L180,50 L170,150 L190,175 Q215,195 220,220 L200,280 Z" />
-                    <path class="hand-lines" d="M70,180 C90,170 120,165 160,175" /><path class="hand-lines" d="M60,140 C55,120 55,100 60,80" /><path class="hand-lines" d="M95,130 C90,110 90,90 95,70" /><path class="hand-lines" d="M135,130 C130,110 130,90 135,70" /><path class="hand-lines" d="M170,150 C175,130 180,110 175,90" /><path class="hand-lines" d="M190,175 C200,160 205,140 195,120" />
-                    <circle class="finger-tip pinky" cx="32" cy="90" r="6" /><circle class="finger-tip ring" cx="75" cy="45" r="6" /><circle class="finger-tip middle" cx="122" cy="25" r="6" /><circle class="finger-tip index" cx="168" cy="60" r="6" /><circle class="finger-tip thumb" cx="205" cy="210" r="6" />
-                </svg>
-            </div>
             <div class="keyboard">
-                <div class="row"><div class="key tab" data-key="Tab">Tab</div><div class="key" data-key="q">Q</div><div class="key" data-key="w">W</div><div class="key" data-key="e">E</div><div class="key" data-key="r">R</div><div class="key" data-key="t">T</div><div class="key" data-key="y">Y</div><div class="key" data-key="u">U</div><div class="key" data-key="i">I</div><div class="key" data-key="o">O</div><div class="key" data-key="p">P</div><div class="key" data-key="[">[</div><div class="key" data-key="]">]</div><div class="key backspace" data-key="Backspace">⌫</div></div>
-                <div class="row"><div class="key caps" data-key="CapsLock">Caps</div><div class="key" data-key="a">A</div><div class="key" data-key="s">S</div><div class="key" data-key="d">D</div><div class="key" data-key="f">F</div><div class="key" data-key="g">G</div><div class="key" data-key="h">H</div><div class="key" data-key="j">J</div><div class="key" data-key="k">K</div><div class="key" data-key="l">L</div><div class="key" data-key=";">;</div><div class="key" data-key="'">'</div><div class="key enter" data-key="Enter">Enter</div></div>
-                <div class="row"><div class="key shift" data-key="Shift">Shift</div><div class="key" data-key="z">Z</div><div class="key" data-key="x">X</div><div class="key" data-key="c">C</div><div class="key" data-key="v">V</div><div class="key" data-key="b">B</div><div class="key" data-key="n">N</div><div class="key" data-key="m">M</div><div class="key" data-key=",">,</div><div class="key" data-key=".">.</div><div class="key" data-key="/">/</div><div class="key shift" data-key="Shift">Shift</div></div>
+                <div class="row"><div class="key" data-key="q">Q</div><div class="key" data-key="w">W</div><div class="key" data-key="e">E</div><div class="key" data-key="r">R</div><div class="key" data-key="t">T</div><div class="key" data-key="y">Y</div><div class="key" data-key="u">U</div><div class="key" data-key="i">I</div><div class="key" data-key="o">O</div><div class="key" data-key="p">P</div></div>
+                <div class="row"><div class="key" data-key="a">A</div><div class="key" data-key="s">S</div><div class="key" data-key="d">D</div><div class="key" data-key="f">F</div><div class="key" data-key="g">G</div><div class="key" data-key="h">H</div><div class="key" data-key="j">J</div><div class="key" data-key="k">K</div><div class="key" data-key="l">L</div></div>
+                <div class="row"><div class="key" data-key="z">Z</div><div class="key" data-key="x">X</div><div class="key" data-key="c">C</div><div class="key" data-key="v">V</div><div class="key" data-key="b">B</div><div class="key" data-key="n">N</div><div class="key" data-key="m">M</div></div>
                 <div class="row"><div class="key space" data-key=" ">皮皮&团团的daddy制作</div></div>
             </div>
         </div>
@@ -379,503 +212,71 @@
     <div id="toast" class="toast">记录已保存</div>
 
     <script>
-        // 🔴 请将此处修改为您在 1Panel 创建的 API 域名 (必须是 https)
-        const API_URL = "https://us.509992828.xyz:3005"; 
+        const API_URL = "https://dz.509992828.de5.net";
 
-        const COMBO_THRESHOLD = 20;
-        const USERS_KEY = 'typeMaster_users';
-        let currentUser = null;
-        let currentUserId = null;
-        let userStats = null;
+        let currentUser=null, currentUserId=null, currentAvatar='🐶', userStats={}, leaderboardData=[], wordBanks={};
+        let currentWordsData=[], currentTextStr="", currentIndex=0, correctKeys=0, totalKeys=0, combo=0, startTime=null, timerInterval=null, sessionStartTime=null, allCharElements=[];
+        const COMBO_THRESHOLD=20, USERS_KEY='typeMaster_users';
+        const keyMap={'q':{h:'L',f:'pinky'},'a':{h:'L',f:'pinky'},'z':{h:'L',f:'pinky'},'w':{h:'L',f:'ring'},'s':{h:'L',f:'ring'},'x':{h:'L',f:'ring'},'e':{h:'L',f:'middle'},'d':{h:'L',f:'middle'},'c':{h:'L',f:'middle'},'r':{h:'L',f:'index'},'f':{h:'L',f:'index'},'v':{h:'L',f:'index'},'t':{h:'L',f:'index'},'g':{h:'L',f:'index'},'b':{h:'L',f:'index'},'y':{h:'R',f:'index'},'h':{h:'R',f:'index'},'n':{h:'R',f:'index'},'u':{h:'R',f:'index'},'j':{h:'R',f:'index'},'m':{h:'R',f:'index'},'i':{h:'R',f:'middle'},'k':{h:'R',f:'middle'},',':{h:'R',f:'middle'},'o':{h:'R',f:'ring'},'l':{h:'R',f:'ring'},'.':{h:'R',f:'ring'},'p':{h:'R',f:'pinky'},';':{h:'R',f:'pinky'},'/':{h:'R',f:'pinky'},'[':{h:'R',f:'pinky'},']':{h:'R',f:'pinky'},"'":{h:'R',f:'pinky'},' ':{h:'R',f:'thumb'}};
+        const achievements=[{id:'1',icon:'🏆',name:'初出茅庐',desc:'完成第1次练习',check:s=>s.totalRounds>=1},{id:'2',icon:'🌱',name:'渐入佳境',desc:'完成10次练习',check:s=>s.totalRounds>=10},{id:'3',icon:'🌲',name:'熟能生巧',desc:'完成50次练习',check:s=>s.totalRounds>=50},{id:'4',icon:'👑',name:'键盘之王',desc:'完成100次练习',check:s=>s.totalRounds>=100},{id:'5',icon:'⚡️',name:'闪电侠',desc:'速度超过 40 WPM',check:s=>s.lastWpm>40},{id:'6',icon:'🚀',name:'超音速',desc:'速度超过 60 WPM',check:s=>s.lastWpm>60},{id:'7',icon:'🛸',name:'光速指法',desc:'速度超过 80 WPM',check:s=>s.lastWpm>80},{id:'8',icon:'🌌',name:'时空穿梭',desc:'速度超过 100 WPM',check:s=>s.lastWpm>100},{id:'9',icon:'👽',name:'外星手速',desc:'速度超过 120 WPM',check:s=>s.lastWpm>120},{id:'10',icon:'🎯',name:'神射手',desc:'准确率 100% 完成一轮',check:s=>s.lastAcc===100&&s.roundKeys>10},{id:'11',icon:'💎',name:'完美主义',desc:'累计10次完美回合',check:s=>s.totalPerfectRounds>=10},{id:'12',icon:'🔬',name:'零失误大师',desc:'累计50次完美回合',check:s=>s.totalPerfectRounds>=50},{id:'13',icon:'🔥',name:'火力全开',desc:'单次连击超过 50',check:s=>s.maxCombo>=50},{id:'14',icon:'🌋',name:'心流状态',desc:'单次连击超过 100',check:s=>s.maxCombo>=100},{id:'15',icon:'🌪️',name:'暴风骤雨',desc:'单次连击超过 200',check:s=>s.maxCombo>=200},{id:'16',icon:'⚡️',name:'连击之神',desc:'单次连击超过 500',check:s=>s.maxCombo>=500},{id:'17',icon:'📜',name:'学童',desc:'累计输入 500 个单词',check:s=>s.totalWords>=500},{id:'18',icon:'📚',name:'学者',desc:'累计输入 2000 个单词',check:s=>s.totalWords>=2000},{id:'19',icon:'🧙‍♂️',name:'大贤者',desc:'累计输入 10000 个单词',check:s=>s.totalWords>=10000},{id:'20',icon:'📖',name:'传奇',desc:'累计输入 50000 个单词',check:s=>s.totalWords>=50000},{id:'21',icon:'🕒',name:'勤奋之星',desc:'累计练习超过 1 小时',check:s=>s.totalTime>=3600},{id:'22',icon:'🏃‍♂️',name:'马拉松',desc:'累计练习超过 5 小时',check:s=>s.totalTime>=18000},{id:'23',icon:'🏋️‍♂️',name:'钢铁意志',desc:'累计练习超过 10 小时',check:s=>s.totalTime>=36000},{id:'24',icon:'🧘‍♂️',name:'禅定',desc:'累计练习超过 24 小时',check:s=>s.totalTime>=86400},{id:'25',icon:'🦉',name:'夜猫子',desc:'在晚上 10 点后练习',check:s=>new Date().getHours()>=22},{id:'26',icon:'☀️',name:'早起的鸟儿',desc:'在早上 5-8 点练习',check:s=>{const h=new Date().getHours();return h>=5&&h<=8}},{id:'27',icon:'📅',name:'周末战士',desc:'在周六或周日练习',check:s=>{const d=new Date().getDay();return d===0||d===6}},{id:'28',icon:'🐢',name:'慢吞吞',desc:'WPM低于10但坚持完成',check:s=>s.lastWpm<10&&s.lastWpm>0},{id:'29',icon:'🔨',name:'键帽破坏者',desc:'累计按键 10,000 次',check:s=>s.totalKeystrokes>=10000},{id:'30',icon:'🎹',name:'钢琴家',desc:'累计按键 50,000 次',check:s=>s.totalKeystrokes>=50000}];
 
-        const fingerCoords = { 'pinky': {x:32,y:90}, 'ring': {x:75,y:45}, 'middle': {x:122,y:25}, 'index': {x:168,y:60}, 'thumb': {x:205,y:210} };
-        const keyMap = { 'q':{h:'L',f:'pinky'},'a':{h:'L',f:'pinky'},'z':{h:'L',f:'pinky'},'w':{h:'L',f:'ring'},'s':{h:'L',f:'ring'},'x':{h:'L',f:'ring'},'e':{h:'L',f:'middle'},'d':{h:'L',f:'middle'},'c':{h:'L',f:'middle'},'r':{h:'L',f:'index'},'f':{h:'L',f:'index'},'v':{h:'L',f:'index'},'t':{h:'L',f:'index'},'g':{h:'L',f:'index'},'b':{h:'L',f:'index'},'y':{h:'R',f:'index'},'h':{h:'R',f:'index'},'n':{h:'R',f:'index'},'u':{h:'R',f:'index'},'j':{h:'R',f:'index'},'m':{h:'R',f:'index'},'i':{h:'R',f:'middle'},'k':{h:'R',f:'middle'},',':{h:'R',f:'middle'},'o':{h:'R',f:'ring'},'l':{h:'R',f:'ring'},'.':{h:'R',f:'ring'},'p':{h:'R',f:'pinky'},';':{h:'R',f:'pinky'},'/':{h:'R',f:'pinky'},'[':{h:'R',f:'pinky'},']':{h:'R',f:'pinky'},"'":{h:'R',f:'pinky'},' ':{h:'R',f:'thumb'} };
-        const wordBanks = { elementary: [{en:"apple",zh:"苹果"},{en:"banana",zh:"香蕉"},{en:"cat",zh:"猫"},{en:"dog",zh:"狗"},{en:"egg",zh:"鸡蛋"},{en:"fish",zh:"鱼"},{en:"girl",zh:"女孩"},{en:"boy",zh:"男孩"},{en:"home",zh:"家"},{en:"ice",zh:"冰"},{en:"juice",zh:"果汁"},{en:"kite",zh:"风筝"},{en:"lion",zh:"狮子"},{en:"milk",zh:"牛奶"},{en:"nose",zh:"鼻子"},{en:"orange",zh:"橙子"},{en:"pig",zh:"猪"},{en:"queen",zh:"女王"},{en:"rabbit",zh:"兔子"},{en:"snake",zh:"蛇"},{en:"tiger",zh:"老虎"},{en:"umbrella",zh:"雨伞"},{en:"violin",zh:"小提琴"},{en:"water",zh:"水"},{en:"box",zh:"盒子"},{en:"yellow",zh:"黄色"},{en:"red",zh:"红色"},{en:"blue",zh:"蓝色"},{en:"green",zh:"绿色"},{en:"black",zh:"黑色"},{en:"white",zh:"白色"},{en:"zoo",zh:"动物园"},{en:"school",zh:"学校"},{en:"book",zh:"书"},{en:"pen",zh:"钢笔"},{en:"pencil",zh:"铅笔"},{en:"desk",zh:"书桌"},{en:"chair",zh:"椅子"},{en:"teacher",zh:"老师"},{en:"student",zh:"学生"},{en:"father",zh:"父亲"},{en:"mother",zh:"母亲"},{en:"sister",zh:"姐妹"},{en:"brother",zh:"兄弟"},{en:"friend",zh:"朋友"},{en:"doctor",zh:"医生"},{en:"nurse",zh:"护士"},{en:"driver",zh:"司机"},{en:"farmer",zh:"农民"},{en:"cook",zh:"厨师"},{en:"happy",zh:"快乐"},{en:"sad",zh:"悲伤"},{en:"hungry",zh:"饿"},{en:"thirsty",zh:"渴"},{en:"tired",zh:"累"},{en:"good",zh:"好"},{en:"bad",zh:"坏"},{en:"big",zh:"大"},{en:"small",zh:"小"},{en:"long",zh:"长"},{en:"short",zh:"短"},{en:"new",zh:"新"},{en:"old",zh:"旧"},{en:"young",zh:"年轻"},{en:"hot",zh:"热"},{en:"cold",zh:"冷"},{en:"sunny",zh:"晴朗"},{en:"rainy",zh:"下雨"},{en:"windy",zh:"刮风"},{en:"cloudy",zh:"多云"},{en:"spring",zh:"春天"},{en:"summer",zh:"夏天"},{en:"autumn",zh:"秋天"},{en:"winter",zh:"冬天"},{en:"morning",zh:"早上"},{en:"afternoon",zh:"下午"},{en:"evening",zh:"晚上"},{en:"night",zh:"夜晚"},{en:"today",zh:"今天"},{en:"tomorrow",zh:"明天"},{en:"one",zh:"一"},{en:"two",zh:"二"},{en:"three",zh:"三"},{en:"four",zh:"四"},{en:"five",zh:"五"},{en:"six",zh:"六"},{en:"seven",zh:"七"},{en:"eight",zh:"八"},{en:"nine",zh:"九"},{en:"ten",zh:"十"},{en:"run",zh:"跑"},{en:"jump",zh:"跳"},{en:"walk",zh:"走"},{en:"swim",zh:"游泳"},{en:"fly",zh:"飞"},{en:"sing",zh:"唱"},{en:"dance",zh:"跳舞"},{en:"read",zh:"读"},{en:"write",zh:"写"},{en:"draw",zh:"画"},{en:"eat",zh:"吃"},{en:"drink",zh:"喝"},{en:"sleep",zh:"睡觉"},{en:"play",zh:"玩"}], python: [{en:"print",zh:"打印输出"},{en:"return",zh:"返回"},{en:"class",zh:"类定义"},{en:"def",zh:"函数定义"},{en:"if",zh:"如果"},{en:"else",zh:"否则"},{en:"elif",zh:"否则如果"},{en:"while",zh:"当..时"},{en:"for",zh:"循环"},{en:"in",zh:"在..里"},{en:"import",zh:"导入"},{en:"from",zh:"从..导入"},{en:"try",zh:"尝试"},{en:"except",zh:"捕获异常"},{en:"raise",zh:"抛出异常"},{en:"finally",zh:"最终执行"},{en:"with",zh:"上下文管理"},{en:"as",zh:"作为"},{en:"pass",zh:"占位符"},{en:"break",zh:"中断循环"},{en:"continue",zh:"跳过本次"},{en:"lambda",zh:"匿名函数"},{en:"global",zh:"全局变量"},{en:"nonlocal",zh:"非局部"},{en:"True",zh:"真"},{en:"False",zh:"假"},{en:"None",zh:"空值"},{en:"and",zh:"逻辑与"},{en:"or",zh:"逻辑或"},{en:"not",zh:"逻辑非"},{en:"is",zh:"是(对象)"},{en:"list",zh:"列表"},{en:"dict",zh:"字典"},{en:"set",zh:"集合"},{en:"tuple",zh:"元组"},{en:"float",zh:"浮点数"},{en:"string",zh:"字符串"},{en:"range",zh:"范围"},{en:"len",zh:"长度"},{en:"open",zh:"打开文件"}] };
+        fetchUsers(); fetchWordBanks(); setupAvatarSelector();
 
-        let currentWordsData=[], currentTextStr="", currentIndex=0, totalKeys=0, correctKeys=0, combo=0, startTime=null, audioCtx=null;
-        let sessionStartTime=null, timerInterval=null, allCharElements=[], isChartView=false, useCustomFile=false, customWordsData=[];
+        async function fetchWordBanks(){try{const res=await fetch(`${API_URL}/api/wordbanks`);wordBanks=await res.json();const select=document.getElementById('word-bank-select');select.innerHTML='';const names={elementary:"📚 小学全能词库",python:"🐍 Python 编程词库"};Object.keys(wordBanks).forEach(key=>{const opt=document.createElement('option');opt.value=key;opt.innerText=names[key]||key;select.appendChild(opt)})}catch(e){console.error("加载词库失败",e)}}
+        async function fetchUsers(){try{const res=await fetch(`${API_URL}/api/users`);const users=await res.json();const grid=document.getElementById('user-grid');grid.innerHTML='';users.forEach(u=>{const card=document.createElement('div');card.className='user-card';card.onclick=()=>login(u.name,u.avatar);card.innerHTML=`<div class="user-avatar-big">${u.avatar}</div><div class="user-name">${u.name}</div>`;grid.appendChild(card)})}catch(e){console.error(e)}}
+        function setupAvatarSelector(){document.querySelectorAll('.avatar-option').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.avatar-option').forEach(a=>a.classList.remove('selected'));el.classList.add('selected')}})}
+        async function createNewUser(){const name=document.getElementById('new-username').value.trim();const avatar=document.querySelector('.avatar-option.selected').innerText;if(!name)return alert("请输入名字");await login(name,avatar);fetchUsers()}
+        async function login(name,avatar){try{const res=await fetch(`${API_URL}/api/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,avatar})});const data=await res.json();currentUser=data.user.name;currentUserId=data.user.id;currentAvatar=data.user.avatar;userStats=data.stats;try{userStats.unlocked=JSON.parse(userStats.unlocked_badges||'[]')}catch(e){userStats.unlocked=[]}['totalRounds','totalTime','totalWords','maxCombo','max_wpm','totalPerfectRounds','totalKeystrokes'].forEach(k=>{if(!userStats[k])userStats[k]=0});document.getElementById('login-screen').style.display='none';document.getElementById('start-screen').style.display='flex';document.getElementById('current-avatar').innerText=currentAvatar;document.getElementById('current-name').innerText=currentUser;renderMyBadges()}catch(e){alert("登录失败")}}
+        function logout(){document.getElementById('start-screen').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('display-container').style.display='none';fetchUsers()}
+        async function showLeaderboard(){toggleModal('leaderboard-modal',true);const res=await fetch(`${API_URL}/api/leaderboard`);leaderboardData=await res.json();renderLeaderboard('speed')}
+        function renderLeaderboard(type){const list=document.getElementById('leaderboard-list');list.innerHTML='';let sorted=[...leaderboardData];if(type==='speed')sorted.sort((a,b)=>b.max_wpm-a.max_wpm);if(type==='volume')sorted.sort((a,b)=>b.totalWords-a.totalWords);if(type==='accuracy')sorted.sort((a,b)=>b.totalPerfectRounds-a.totalPerfectRounds);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));const idx=type==='speed'?0:type==='volume'?1:2;document.querySelectorAll('.tab-btn')[idx].classList.add('active');sorted.forEach((u,index)=>{const item=document.createElement('div');item.className='rank-item';let score='';if(type==='speed')score=`${u.max_wpm} WPM`;if(type==='volume')score=`${u.totalWords} 字`;if(type==='accuracy')score=`${u.totalPerfectRounds} 次完美`;item.innerHTML=`<div class="rank-num ${index===0?'top1':''}">${index+1}</div><div class="rank-avatar">${u.avatar}</div><div class="rank-name">${u.name}</div><div class="rank-score">${score}</div>`;list.appendChild(item)})}
         
-        const achievements = [
-            { id: '1', icon: '🏆', name: '初出茅庐', desc: '完成第1次练习', check: s => s.totalRounds >= 1 },
-            { id: '2', icon: '🌱', name: '渐入佳境', desc: '完成10次练习', check: s => s.totalRounds >= 10 },
-            { id: '3', icon: '🌲', name: '熟能生巧', desc: '完成50次练习', check: s => s.totalRounds >= 50 },
-            { id: '4', icon: '👑', name: '键盘之王', desc: '完成100次练习', check: s => s.totalRounds >= 100 },
-            { id: '5', icon: '⚡️', name: '闪电侠', desc: '速度超过 40 WPM', check: s => s.lastWpm > 40 },
-            { id: '6', icon: '🚀', name: '超音速', desc: '速度超过 60 WPM', check: s => s.lastWpm > 60 },
-            { id: '7', icon: '🛸', name: '光速指法', desc: '速度超过 80 WPM', check: s => s.lastWpm > 80 },
-            { id: '8', icon: '🌌', name: '时空穿梭', desc: '速度超过 100 WPM', check: s => s.lastWpm > 100 },
-            { id: '9', icon: '👽', name: '外星手速', desc: '速度超过 120 WPM', check: s => s.lastWpm > 120 },
-            { id: '10', icon: '🎯', name: '神射手', desc: '准确率 100% 完成一轮', check: s => s.lastAcc === 100 && s.roundKeys > 10 },
-            { id: '11', icon: '💎', name: '完美主义', desc: '累计10次完美回合', check: s => s.totalPerfectRounds >= 10 },
-            { id: '12', icon: '🔬', name: '零失误大师', desc: '累计50次完美回合', check: s => s.totalPerfectRounds >= 50 },
-            { id: '13', icon: '🔥', name: '火力全开', desc: '单次连击超过 50', check: s => s.maxCombo >= 50 },
-            { id: '14', icon: '🌋', name: '心流状态', desc: '单次连击超过 100', check: s => s.maxCombo >= 100 },
-            { id: '15', icon: '🌪️', name: '暴风骤雨', desc: '单次连击超过 200', check: s => s.maxCombo >= 200 },
-            { id: '16', icon: '⚡️', name: '连击之神', desc: '单次连击超过 500', check: s => s.maxCombo >= 500 },
-            { id: '17', icon: '📜', name: '学童', desc: '累计输入 500 个单词', check: s => s.totalWords >= 500 },
-            { id: '18', icon: '📚', name: '学者', desc: '累计输入 2000 个单词', check: s => s.totalWords >= 2000 },
-            { id: '19', icon: '🧙‍♂️', name: '大贤者', desc: '累计输入 10000 个单词', check: s => s.totalWords >= 10000 },
-            { id: '20', icon: '📖', name: '传奇', desc: '累计输入 50000 个单词', check: s => s.totalWords >= 50000 },
-            { id: '21', icon: '🕒', name: '勤奋之星', desc: '累计练习超过 1 小时', check: s => s.totalTime >= 3600 },
-            { id: '22', icon: '🏃‍♂️', name: '马拉松', desc: '累计练习超过 5 小时', check: s => s.totalTime >= 18000 },
-            { id: '23', icon: '🏋️‍♂️', name: '钢铁意志', desc: '累计练习超过 10 小时', check: s => s.totalTime >= 36000 },
-            { id: '24', icon: '🧘‍♂️', name: '禅定', desc: '累计练习超过 24 小时', check: s => s.totalTime >= 86400 },
-            { id: '25', icon: '🦉', name: '夜猫子', desc: '在晚上 10 点后练习', check: s => new Date().getHours() >= 22 },
-            { id: '26', icon: '☀️', name: '早起的鸟儿', desc: '在早上 5-8 点练习', check: s => { const h=new Date().getHours(); return h>=5 && h<=8; } },
-            { id: '27', icon: '📅', name: '周末战士', desc: '在周六或周日练习', check: s => { const d=new Date().getDay(); return d===0 || d===6; } },
-            { id: '28', icon: '🐢', name: '慢吞吞', desc: 'WPM低于10但坚持完成', check: s => s.lastWpm < 10 && s.lastWpm > 0 },
-            { id: '29', icon: '🔨', name: '键帽破坏者', desc: '累计按键 10,000 次', check: s => s.totalKeystrokes >= 10000 },
-            { id: '30', icon: '🎹', name: '钢琴家', desc: '累计按键 50,000 次', check: s => s.totalKeystrokes >= 50000 }
-        ];
-
-        const displayContainer = document.getElementById('display-container');
-        const displayTrack = document.getElementById('display-track');
-        const keyboardContainer = document.getElementById('keyboard-container');
-        const handLeft = document.getElementById('hand-left');
-        const handRight = document.getElementById('hand-right');
-        const appWrapper = document.getElementById('app-wrapper'); 
-
-        // --- User Management ---
-        function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
-        function saveUsers(users) { localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+        function startGame(){const bank=document.getElementById('word-bank-select').value;currentWordsData=wordBanks[bank];let round=[];for(let i=0;i<20;i++)round.push(currentWordsData[Math.floor(Math.random()*currentWordsData.length)]);currentTextStr=round.map(w=>w.en).join(" ");currentIndex=0;correctKeys=0;totalKeys=0;combo=0;startTime=null;renderText(round);document.getElementById('start-screen').style.display='none';document.getElementById('display-container').style.display='flex';sessionStartTime=Date.now();if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(()=>{const diff=Math.floor((Date.now()-sessionStartTime)/1000);document.getElementById('time-elapsed').innerText=`${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`},1000)}
+        function renderText(words){const track=document.getElementById('display-track');track.innerHTML='';allCharElements=[];words.forEach((w,idx)=>{const block=document.createElement('div');block.className='word-block';const en=document.createElement('div');en.className='word-en';w.en.split('').forEach(c=>{const span=document.createElement('span');span.innerText=c;span.className='char';en.appendChild(span);allCharElements.push(span)});if(idx<words.length-1){const span=document.createElement('span');span.innerText=' ';span.className='char space-char';en.appendChild(span);allCharElements.push(span)}const zh=document.createElement('div');zh.className='word-zh';zh.innerText=w.zh;block.appendChild(en);block.appendChild(zh);track.appendChild(block)});if(allCharElements.length>0)allCharElements[0].classList.add('current');autoScroll()}
+        function autoScroll(){const el=allCharElements[currentIndex];if(el){const con=document.getElementById('display-container');const offset=el.getBoundingClientRect().left-document.getElementById('display-track').getBoundingClientRect().left;const center=con.offsetWidth/2-el.offsetWidth/2;document.getElementById('display-track').style.transform=`translateX(${center-offset}px)`}}
+        function saveRound(wpm,acc){userStats.totalRounds++;userStats.totalWords+=20;if(acc===100)userStats.totalPerfectRounds++;if(wpm>userStats.max_wpm)userStats.max_wpm=wpm;if(combo>userStats.maxCombo)userStats.maxCombo=combo;const timeStr=new Date().toLocaleString('zh-CN');fetch(`${API_URL}/api/save`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:currentUserId,record:{wpm,acc:acc+'%',count:20,time:timeStr},stats:userStats})}).then(()=>{document.getElementById('toast').classList.add('show');setTimeout(()=>document.getElementById('toast').classList.remove('show'),2000);setTimeout(()=>{document.getElementById('start-screen').style.display='flex';renderMyBadges()},1000)})}
         
-        function renderUserList() {
-            const grid = document.getElementById('user-grid'); grid.innerHTML = '';
-            const users = getUsers();
-            if (users.length === 0) return;
-            users.forEach(name => {
-                const card = document.createElement('div'); card.className='user-card';
-                card.onclick = () => loginUser(name);
-                card.innerHTML = `<div class="user-avatar">👤</div><div class="user-name">${name}</div>`;
-                grid.appendChild(card);
-            });
-        }
-
-        function createNewUser() {
-            const input = document.getElementById('new-username'); const name = input.value.trim();
-            if (!name) return alert("请输入名字");
-            const users = getUsers(); if (users.includes(name)) return alert("用户已存在");
-            users.push(name); saveUsers(users); input.value = ''; renderUserList();
-        }
-
-        async function loginUser(name) {
-            try {
-                const res = await fetch(`${API_URL}/api/login`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ name })
-                });
-                const data = await res.json();
+        document.addEventListener('keydown',(e)=>{
+            if(document.getElementById('start-screen').style.display!=='none'||document.getElementById('login-screen').style.display!=='none')return;
+            if(['Shift','Alt','Control','Meta','CapsLock'].includes(e.key))return;
+            if(!startTime)startTime=Date.now();
+            const key=e.key.length===1?e.key.toLowerCase():e.key;const target=currentTextStr[currentIndex]?.toLowerCase();
+            const vKey=document.querySelector(`.key[data-key="${key}"]`)||document.querySelector(`.key[data-key="${e.key}"]`);
+            if(vKey){vKey.classList.add('active');setTimeout(()=>vKey.classList.remove('active'),100);const rect=vKey.getBoundingClientRect();const ripple=document.createElement('div');ripple.className='key-ripple';ripple.style.left=(rect.left+rect.width/2)+'px';ripple.style.top=(rect.top+rect.height/2)+'px';document.body.appendChild(ripple);setTimeout(()=>ripple.remove(),600)}
+            if(key==='Backspace'){if(currentIndex>0){currentIndex--;allCharElements[currentIndex].className=allCharElements[currentIndex].innerText===' '?'char space-char':'char';allCharElements[currentIndex].classList.add('current');if(allCharElements[currentIndex+1])allCharElements[currentIndex+1].classList.remove('current');autoScroll()}return}
+            if(!target)return; totalKeys++;
+            if(key===target){
+                correctKeys++;combo++;allCharElements[currentIndex].classList.add('correct');allCharElements[currentIndex].classList.remove('current');
+                if(combo>=20){document.body.classList.add('on-fire');document.getElementById('keyboard-container').classList.add('rgb-mode');if(vKey){for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';document.body.appendChild(p);const s=Math.random()*8+4;p.style.width=s+'px';p.style.height=s+'px';p.style.background=Math.random()>0.7?'#fff':'#f9e2af';const rect=vKey.getBoundingClientRect();p.style.left=(rect.left+rect.width/2)+'px';p.style.top=(rect.top+rect.height/2)+'px';const a=Math.random()*Math.PI*2,v=Math.random()*150+50;p.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${Math.cos(a)*v}px,${Math.sin(a)*v}px)`,opacity:0}],{duration:600}).onfinish=()=>p.remove()}}}
+                checkAchievements({maxCombo:combo});
+                // 单词发音逻辑
+                let spaceCount=0;for(let i=0;i<currentIndex;i++)if(currentTextStr[i]===' ')spaceCount++;
+                if(target===' '){if(currentWordsData[spaceCount])speakWord(currentWordsData[spaceCount].en)}
+                else if(currentIndex===currentTextStr.length-1){if(currentWordsData[currentWordsData.length-1])speakWord(currentWordsData[currentWordsData.length-1].en)}
                 
-                currentUser = data.user.name; currentUserId = data.user.id;
-                userStats = data.stats;
-                if (typeof userStats.unlocked_badges === 'string') userStats.unlocked = JSON.parse(userStats.unlocked_badges || '[]');
-                else userStats.unlocked = userStats.unlocked_badges || [];
-                
-                userStats.totalRounds = userStats.totalRounds || 0;
-                userStats.totalWords = userStats.totalWords || 0;
-                userStats.maxCombo = userStats.maxCombo || 0;
-                userStats.totalPerfectRounds = userStats.totalPerfectRounds || 0;
-                userStats.totalKeystrokes = userStats.totalKeystrokes || 0;
-
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('start-screen').style.display = 'flex';
-                document.getElementById('welcome-text').innerText = `欢迎回来, ${currentUser}`;
-                renderRecentBadges();
-                loadServerHistory();
-            } catch (e) {
-                alert("连接服务器失败，请检查网络或后端配置");
-                console.error(e);
-            }
-        }
-
-        async function loadServerHistory() {
-            if(!currentUserId) return;
-            const res = await fetch(`${API_URL}/api/history/${currentUserId}`);
-            const history = await res.json();
-            localStorage.setItem('tempServerHistory', JSON.stringify(history));
-        }
-
-        function logout() {
-            currentUser = null; currentUserId = null;
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'flex';
-        }
-
-        // Init Users
-        renderUserList();
-
-        function handleBankChange() { useCustomFile=false; document.getElementById('file-status').style.display='none'; }
-        function handleFileUpload(input) {
-            const file = input.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const lines = e.target.result.split(/\r?\n/).filter(line => line.trim() !== '');
-                customWordsData = lines.map(line => {
-                    const parts = line.split('|');
-                    if (parts.length > 1) return { en: parts[0].trim(), zh: parts[1].trim() };
-                    const spaces = line.trim().split(/\s+/);
-                    if (spaces.length > 1 && /[\u4e00-\u9fa5]/.test(spaces[spaces.length-1])) { const zh=spaces.pop(); const en=spaces.join(' '); return {en,zh}; }
-                    return { en: line.trim(), zh: "自定义练习" };
-                });
-                useCustomFile=true; document.getElementById('file-status').innerText=`已加载 ${customWordsData.length} 个单词`; document.getElementById('file-status').style.display='block'; document.getElementById('word-bank-select').value=''; 
-            }; reader.readAsText(file);
-        }
-
-        function startGame() { 
-            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} 
-            if (useCustomFile && customWordsData.length > 0) currentWordsData = customWordsData;
-            else { const s = document.getElementById('word-bank-select').value; if(!s) return alert("请选择词库或导入文件"); currentWordsData = wordBanks[s]; }
-            startSessionTimer(); document.getElementById('start-screen').style.display='none'; initRound(); 
-        }
-
-        function startSessionTimer() {
-            sessionStartTime = Date.now(); if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                const diff = Math.floor((Date.now() - sessionStartTime) / 1000);
-                document.getElementById('time-elapsed').innerText = `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`;
-                userStats.totalTime += 1;
-                checkAchievements({ totalTime: userStats.totalTime });
-                localStorage.setItem('typeMasterStats', JSON.stringify(userStats));
-            }, 1000);
-        }
-        
-        function initRound() { 
-            let selection = []; const count = Math.min(20, currentWordsData.length);
-            for(let i=0; i<count; i++) selection.push(currentWordsData[Math.floor(Math.random() * currentWordsData.length)]);
-            renderBilingualText(selection); currentTextStr = selection.map(w => w.en).join(" "); currentIndex = 0; autoScroll(); setTimeout(updateHandsPosition, 50); 
-        }
-
-        function renderBilingualText(wordsArray) {
-            displayTrack.innerHTML = ''; allCharElements = []; 
-            wordsArray.forEach((wordObj, wordIndex) => {
-                const b = document.createElement('div'); b.className='word-block';
-                const e = document.createElement('div'); e.className='word-en';
-                wordObj.en.split('').forEach(char => { const s=document.createElement('span'); s.innerText=char; s.className='char'; e.appendChild(s); allCharElements.push(s); });
-                if (wordIndex < wordsArray.length - 1) { const s=document.createElement('span'); s.innerText='␣'; s.className='char space-char'; e.appendChild(s); allCharElements.push(s); }
-                const z = document.createElement('div'); z.className='word-zh'; z.innerText=wordObj.zh;
-                b.appendChild(e); b.appendChild(z); displayTrack.appendChild(b);
-            });
-            if(allCharElements.length > 0) allCharElements[0].classList.add('current');
-        }
-
-        function autoScroll() {
-            const el = allCharElements[currentIndex]; if (el) {
-                const rect = el.getBoundingClientRect(); const conRect = displayContainer.getBoundingClientRect();
-                const diff = (conRect.left + conRect.width/2) - (rect.left + rect.width/2);
-                const currentT = new WebKitCSSMatrix(window.getComputedStyle(displayTrack).transform).m41;
-                displayTrack.style.transform = `translateX(${currentT + diff}px)`;
-            }
-        }
-
-        function updateHandsPosition() {
-            document.querySelectorAll('.finger-tip').forEach(el => el.classList.remove('active'));
-            let tL=null, fL='index', tR=null, fR='index';
-            if (currentIndex < currentTextStr.length) {
-                const char = currentTextStr[currentIndex].toLowerCase(); const map = keyMap[char];
-                if (map) {
-                    const tEl = document.querySelector(`.key[data-key="${char}"]`) || document.querySelector(`.key[data-key=" "]`);
-                    if (tEl) { if (map.h === 'L') { tL=tEl; fL=map.f; } else { tR=tEl; fR=map.f; } }
-                    const h = map.h === 'L' ? handLeft : handRight; const f = h.querySelector(`.finger-tip.${map.f}`); if(f) f.classList.add('active');
-                }
-            }
-            moveHand(handLeft, tL || document.querySelector('.key[data-key="f"]'), fL, false); 
-            moveHand(handRight, tR || document.querySelector('.key[data-key="j"]'), fR, true);
-        }
-
-        function moveHand(handEl, keyEl, fingerType, isRightHand) {
-            const cRect = keyboardContainer.getBoundingClientRect(); const kRect = keyEl.getBoundingClientRect();
-            const cx = kRect.left - cRect.left + kRect.width/2; const cy = kRect.top - cRect.top + kRect.height/2;
-            const loc = fingerCoords[fingerType];
-            const ty = cy + 13; const fy = ty - loc.y; let fx = isRightHand ? cx + loc.x : cx - loc.x;
-            handEl.style.transform = `translate(${fx}px, ${fy}px) ${isRightHand?'scaleX(-1)':''}`;
-        }
-
-        function triggerRipple(keyEl) {
-            const ripple = document.createElement('div'); ripple.className = 'key-ripple';
-            const rect = keyEl.getBoundingClientRect();
-            ripple.style.left = (rect.left + rect.width/2) + 'px';
-            ripple.style.top = (rect.top + rect.height/2) + 'px';
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
-        }
-
-        function spawnFireParticles(x, y) {
-            for(let i=0; i<20; i++) {
-                const p = document.createElement('div'); p.classList.add('particle'); document.body.appendChild(p);
-                const size = Math.random()*8+4; p.style.width=size+'px'; p.style.height=size+'px';
-                p.style.background = Math.random()>0.7?'#fff':(Math.random()>0.3?'#f9e2af':'#f38ba8');
-                p.style.left=x+'px'; p.style.top=y+'px';
-                const a = Math.random()*Math.PI*2; const v = Math.random()*150+50;
-                const anim = p.animate([{transform:'translate(0,0) scale(1)', opacity:1}, {transform:`translate(${Math.cos(a)*v}px, ${Math.sin(a)*v}px) scale(0)`, opacity:0}], {duration:Math.random()*600+400, easing:'cubic-bezier(0,.5,.5,1)'});
-                anim.onfinish=()=>p.remove();
-            }
-        }
-
-        function checkAchievements(currentStats) {
-            let newlyUnlocked = false;
-            achievements.forEach(ach => {
-                if (!userStats.unlocked.includes(ach.id)) {
-                    const checkData = { ...userStats, ...currentStats };
-                    if (ach.check(checkData)) {
-                        userStats.unlocked.push(ach.id);
-                        showUnlock(ach);
-                        newlyUnlocked = true;
-                    }
-                }
-            });
-            if (newlyUnlocked) {
-                fetch(`${API_URL}/api/save`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ userId: currentUserId, record: {wpm:0,acc:'0',count:0,time:''}, stats: {...userStats, unlocked: userStats.unlocked} })
-                });
-                renderRecentBadges();
-            }
-        }
-
-        function renderRecentBadges() {
-            const container = document.getElementById('recent-badges-container'); container.innerHTML = '';
-            const last5Ids = userStats.unlocked.slice(-5).reverse();
-            if (last5Ids.length === 0) {
-                for(let i=0; i<3; i++) { const el = document.createElement('div'); el.className = 'mini-badge empty'; el.innerText = '?'; container.appendChild(el); }
-            } else {
-                last5Ids.forEach(id => {
-                    const ach = achievements.find(a => a.id === id);
-                    if (ach) {
-                        const el = document.createElement('div'); el.className = 'mini-badge';
-                        el.onclick = () => showDetailOverlay(ach);
-                        el.innerHTML = `${ach.icon}<div class="tooltip">${ach.name}</div>`;
-                        container.appendChild(el);
-                    }
-                });
-            }
-        }
-
-        function renderBadgeLibrary() {
-            const container = document.getElementById('badge-library-grid');
-            const countEl = document.getElementById('badge-count');
-            container.innerHTML = ''; countEl.innerText = `${userStats.unlocked.length}/${achievements.length}`;
-            achievements.forEach(ach => {
-                const isUnlocked = userStats.unlocked.includes(ach.id);
-                const el = document.createElement('div');
-                el.className = `lib-badge ${isUnlocked ? 'unlocked' : ''}`;
-                if(isUnlocked) el.onclick = () => showDetailOverlay(ach);
-                el.innerHTML = `<div class="icon">${isUnlocked ? ach.icon : '🔒'}</div><div class="name">${ach.name}</div><div class="desc">${ach.desc}</div>`;
-                container.appendChild(el);
-            });
-        }
-
-        function showUnlock(ach) {
-            const overlay = document.getElementById('achievement-overlay');
-            document.getElementById('unlock-icon').innerText = ach.icon;
-            document.getElementById('unlock-desc').innerText = `恭喜解锁：${ach.name}`;
-            overlay.style.display = 'flex';
-            startFireworks(); playSound('epic'); 
-            setTimeout(() => {
-                const card = overlay.querySelector('.achievement-card');
-                card.style.transform = 'translateY(-100vh) scale(0.1)'; card.style.opacity = '0';
-                setTimeout(() => { overlay.style.display = 'none'; card.style.transform = ''; card.style.opacity = ''; stopFireworks(); }, 800); 
-            }, 1500); 
-        }
-
-        function showDetailOverlay(ach) {
-            document.getElementById('detail-icon').innerText = ach.icon;
-            document.getElementById('detail-title').innerText = ach.name;
-            document.getElementById('detail-desc').innerText = ach.desc;
-            document.getElementById('detail-overlay').style.display = 'flex';
-        }
-        function closeDetailOverlay() { document.getElementById('detail-overlay').style.display = 'none'; }
-
-        function toggleModal(id, show) {
-            document.getElementById(id).style.display = show ? 'flex' : 'none';
-            if (id === 'badge-modal' && show) renderBadgeLibrary();
-            if (id === 'history-modal' && show) { isChartView=false; renderHistoryList(); document.getElementById('history-list-view').style.display='block'; document.getElementById('chart-container').style.display='none'; }
-        }
-
-        function closeAchievement() { const overlay = document.getElementById('achievement-overlay'); overlay.style.display = 'none'; stopFireworks(); }
-
-        let fwCtx, fwW, fwH, fwLoop; let fireworks = [];
-        function startFireworks() {
-            const c = document.getElementById('fireworks-canvas'); fwCtx = c.getContext('2d'); fwW = c.width = window.innerWidth; fwH = c.height = window.innerHeight; fireworks = [];
-            function loop() {
-                fwCtx.globalCompositeOperation = 'destination-out'; fwCtx.fillStyle = 'rgba(0, 0, 0, 0.1)'; fwCtx.fillRect(0, 0, fwW, fwH);
-                fwCtx.globalCompositeOperation = 'lighter';
-                if (Math.random() < 0.05) fireworks.push(new Firework());
-                for (let i = fireworks.length - 1; i >= 0; i--) { fireworks[i].update(); fireworks[i].draw(); if (fireworks[i].dead) fireworks.splice(i, 1); }
-                fwLoop = requestAnimationFrame(loop);
-            } loop();
-        }
-        function stopFireworks() { cancelAnimationFrame(fwLoop); fwCtx.clearRect(0,0,fwW,fwH); }
-        class Firework {
-            constructor() { this.x = Math.random() * fwW; this.y = fwH; this.tx = Math.random() * fwW; this.ty = Math.random() * fwH / 2; this.vx = (this.tx - this.x) / 100; this.vy = (this.ty - this.y) / 100; this.age = 0; this.exploded = false; this.particles = []; this.color = `hsl(${Math.random()*360}, 100%, 50%)`; }
-            update() { if(!this.exploded) { this.x += this.vx; this.y += this.vy; this.age++; if(this.age >= 100) { this.exploded = true; this.explode(); } } else { for(let p of this.particles) { p.x+=p.vx; p.y+=p.vy; p.vy+=0.05; p.alpha-=0.01; } this.particles = this.particles.filter(p=>p.alpha>0); if(this.particles.length===0) this.dead=true; } }
-            explode() { for(let i=0; i<50; i++) { const a = Math.random()*Math.PI*2; const v = Math.random()*3; this.particles.push({x:this.x, y:this.y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, alpha:1}); } }
-            draw() { if(!this.exploded) { fwCtx.fillStyle = this.color; fwCtx.fillRect(this.x, this.y, 3, 3); } else { for(let p of this.particles) { fwCtx.fillStyle = this.color; fwCtx.globalAlpha = p.alpha; fwCtx.fillRect(p.x, p.y, 2, 2); } fwCtx.globalAlpha = 1; } }
-        }
-
-        function playSound(type) {
-            if(!audioCtx || audioCtx.state === 'suspended') return;
-            const t = audioCtx.currentTime;
-            if(type === 'click') {
-                const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-                const n = audioCtx.createBufferSource(); n.buffer = audioCtx.createBuffer(1, audioCtx.sampleRate*0.05, audioCtx.sampleRate);
-                const d = n.buffer.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
-                const f = audioCtx.createBiquadFilter(); f.type="highpass"; f.frequency.value=1000;
-                o.frequency.setValueAtTime(300, t); o.frequency.exponentialRampToValueAtTime(50, t+0.05);
-                g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.01, t+0.05);
-                n.connect(f); f.connect(g); o.connect(g); g.connect(audioCtx.destination); o.start(); n.start(); o.stop(t+0.05); n.stop(t+0.05);
-            } else if (type === 'epic') {
-                [261.63, 329.63, 392.00, 523.25].forEach((freq, i) => {
-                    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-                    o.type = i%2 ? 'sawtooth' : 'square'; o.frequency.setValueAtTime(freq, t);
-                    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.1, t + 0.05); g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-                    const f = audioCtx.createBiquadFilter(); f.type = "lowpass"; f.frequency.setValueAtTime(200, t); f.frequency.linearRampToValueAtTime(2000, t + 0.2);
-                    o.connect(f); f.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(t + 0.6);
-                });
-            } else {
-                const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-                o.type = 'triangle'; o.frequency.setValueAtTime(100, t); g.gain.setValueAtTime(0.2, t); g.gain.linearRampToValueAtTime(0.01, t + 0.15);
-                o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(t+0.15);
-            }
-        }
-        function speakWord(text) { if (!window.speechSynthesis) return; if (!/[a-zA-Z]/.test(text)) return; window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.8; u.pitch = 1.1; window.speechSynthesis.speak(u); }
-
-        function saveHistory() {
-            const wpm = parseInt(document.getElementById('wpm').innerText);
-            const acc = parseInt(document.getElementById('accuracy').innerText.replace('%',''));
-            const time = new Date().toLocaleString('zh-CN', { hour12: false });
-            
-            userStats.totalRounds += 1;
-            userStats.totalWords += 20; 
-            if (acc === 100) userStats.totalPerfectRounds += 1;
-            if (combo > userStats.maxCombo) userStats.maxCombo = combo;
-
-            checkAchievements({ lastWpm: wpm, lastAcc: acc, roundKeys: correctKeys });
-
-            fetch(`${API_URL}/api/save`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    userId: currentUserId,
-                    record: { wpm, acc: acc+'%', count: correctKeys, time, timestamp: time }, // Fix: Added timestamp key explicitly
-                    stats: { ...userStats, unlocked: userStats.unlocked }
-                })
-            }).then(() => {
-                document.getElementById('toast').classList.add('show'); 
-                setTimeout(()=>document.getElementById('toast').classList.remove('show'), 2000);
-                loadServerHistory();
-            });
-        }
-
-        function toggleViewMode() { isChartView=!isChartView; const l=document.getElementById('history-list-view'), c=document.getElementById('chart-container'); if(isChartView){l.style.display='none';c.style.display='block';renderHistoryChart();}else{l.style.display='block';c.style.display='none';renderHistoryList();} }
-        function renderHistoryList() { const h=JSON.parse(localStorage.getItem('tempServerHistory')||'[]'); const l=document.getElementById('history-list'); l.innerHTML=h.length===0?'<tr><td colspan="4" style="text-align:center;color:#6c7086;">暂无记录</td></tr>':''; h.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.timestamp || r.time}</td><td>${r.count}</td><td class="${parseInt(r.wpm)>40?'wpm-high':''}">${r.wpm}</td><td>${r.acc}</td>`;l.appendChild(tr);}); }
-        
-        function renderHistoryChart() { 
-            const canvas = document.getElementById('history-chart'); const ctx = canvas.getContext('2d');
-            const h = JSON.parse(localStorage.getItem('tempServerHistory')||'[]');
-            const r = canvas.parentNode.getBoundingClientRect(); canvas.width=r.width; canvas.height=r.height;
-            
-            if(!document.getElementById('chart-legend')) {
-                const legend = document.createElement('div'); legend.id='chart-legend'; legend.className='chart-legend';
-                legend.innerHTML='<div class="legend-item"><div class="legend-dot" style="background:#f9a450"></div> WPM (速度)</div><div class="legend-item"><div class="legend-dot" style="background:#a6e3a1"></div> 准确率 (%)</div>';
-                document.getElementById('chart-container').appendChild(legend);
-            }
-
-            if(h.length<2) { ctx.fillStyle="#6c7086"; ctx.font="16px monospace"; ctx.textAlign="center"; ctx.fillText("需更多记录显示趋势", canvas.width/2, canvas.height/2); return; }
-            const d = h.slice().reverse(); const p=30; const w=canvas.width-p*2; const ht=canvas.height-p*2;
-            ctx.strokeStyle="#313244"; ctx.beginPath(); ctx.moveTo(p,p); ctx.lineTo(p,canvas.height-p); ctx.lineTo(canvas.width-p,canvas.height-p); ctx.stroke();
-            let max=100; d.forEach(x=>{if(parseInt(x.wpm)>max)max=parseInt(x.wpm)}); max+=10;
-            const getX = i => p + (i/(d.length-1))*w; const getY = v => (canvas.height-p) - (v/max)*ht;
-            
-            const points = [];
-            const draw = (k,c) => { 
-                ctx.strokeStyle=c; ctx.lineWidth=2; ctx.beginPath(); 
-                d.forEach((x,i)=>{ 
-                    const v=parseInt(x[k]); const px=getX(i), py=getY(v); 
-                    if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py); 
-                    ctx.fillStyle=c; ctx.fillRect(px-2,py-2,4,4);
-                    if(!points[i]) points[i] = {x:px, data:x}; points[i][k] = v;
-                }); 
-                ctx.stroke(); 
-            };
-            draw('wpm','#f9a450'); draw('acc','#a6e3a1');
-
-            canvas.onmousemove = (e) => {
-                const rect = canvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left;
-                let closest = null; let minDist = 1000;
-                points.forEach(p => { const dist = Math.abs(p.x - mouseX); if(dist < minDist) { minDist = dist; closest = p; } });
-                
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                ctx.strokeStyle="#313244"; ctx.beginPath(); ctx.moveTo(p,p); ctx.lineTo(p,canvas.height-p); ctx.lineTo(canvas.width-p,canvas.height-p); ctx.stroke();
-                draw('wpm','#f9a450'); draw('acc','#a6e3a1');
-
-                if(closest && minDist < 50) {
-                    ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth=1;
-                    ctx.beginPath(); ctx.moveTo(closest.x, p); ctx.lineTo(closest.x, canvas.height-p); ctx.stroke();
-                    const tx = closest.x - 60 < 0 ? closest.x + 10 : closest.x - 60; const ty = 10;
-                    ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(tx, ty, 120, 60);
-                    ctx.strokeStyle = "#45475a"; ctx.strokeRect(tx, ty, 120, 60);
-                    ctx.fillStyle = "#fff"; ctx.font = "12px sans-serif"; ctx.textAlign = "left";
-                    ctx.fillText(`WPM: ${closest.wpm}`, tx+10, ty+20);
-                    ctx.fillText(`ACC: ${closest.acc}%`, tx+10, ty+35);
-                    ctx.fillStyle = "#6c7086"; ctx.font = "10px sans-serif";
-                    ctx.fillText(`${closest.data.timestamp || closest.data.time}`, tx+10, ty+50);
-                }
-            };
-            canvas.onmouseleave = () => {
-                 ctx.clearRect(0,0,canvas.width,canvas.height);
-                 ctx.strokeStyle="#313244"; ctx.beginPath(); ctx.moveTo(p,p); ctx.lineTo(p,canvas.height-p); ctx.lineTo(canvas.width-p,canvas.height-p); ctx.stroke();
-                 draw('wpm','#f9a450'); draw('acc','#a6e3a1');
-            }
-        }
-        function clearHistory() { if(confirm('清空所有？')) { /* API call to clear */ } }
-
-        function handleVirtualKey(keyVal) { const dummyEvent = { key: keyVal, preventDefault: () => {} }; processInput(dummyEvent); }
-        document.querySelectorAll('.key').forEach(k => {
-            k.addEventListener('touchstart', (e) => { e.preventDefault(); const keyVal = k.getAttribute('data-key'); handleVirtualKey(keyVal); });
-            k.addEventListener('mousedown', (e) => { e.preventDefault(); const keyVal = k.getAttribute('data-key'); handleVirtualKey(keyVal); });
+                currentIndex++;if(currentIndex<currentTextStr.length)allCharElements[currentIndex].classList.add('current');
+                else{const wpm=Math.round((correctKeys/5)/((Date.now()-startTime)/60000));const acc=Math.round((correctKeys/totalKeys)*100);saveRound(wpm,acc)}
+            }else{combo=0;document.body.classList.remove('on-fire');document.getElementById('keyboard-container').classList.remove('rgb-mode');allCharElements[currentIndex].classList.add('wrong')}
+            document.getElementById('wpm').innerText=startTime?Math.round((correctKeys/5)/((Date.now()-startTime)/60000)):0;document.getElementById('accuracy').innerText=Math.round((correctKeys/totalKeys)*100)+'%';document.getElementById('combo').innerText=combo;autoScroll()
         });
 
-        function processInput(e) {
-            if(document.getElementById('start-screen').style.display !== 'none') return;
-            if(['Shift','Alt','Control','Meta','CapsLock','Tab'].includes(e.key)) return;
-            if(!startTime) startTime = Date.now();
-            const rawKey = e.key; const key = rawKey.length === 1 ? rawKey.toLowerCase() : rawKey;
-            const targetChar = currentTextStr[currentIndex]?.toLowerCase();
-            const visualKey = document.querySelector(`.key[data-key="${rawKey.length===1?key:rawKey}"]`) || document.querySelector(`.key[data-key="${rawKey}"]`);
-            if (visualKey) { visualKey.classList.add('active'); setTimeout(()=>visualKey.classList.remove('active'), 100); triggerRipple(visualKey); }
-            if(key === 'Backspace') { 
-                if(currentIndex > 0) { 
-                    currentIndex--; const prev = allCharElements[currentIndex];
-                    prev.className = 'char ' + (currentTextStr[currentIndex] === ' ' ? 'space-char' : '') + ' current';
-                    const curr = allCharElements[currentIndex + 1]; if(curr) curr.classList.remove('current');
-                    updateHandsPosition(); autoScroll(); 
-                } return; 
-            }
-            if(rawKey.length > 1 && rawKey !== 'Enter') return; if(!targetChar) return; 
-            totalKeys++; userStats.totalKeystrokes += 1;
-
-            if(key === targetChar) {
-                correctKeys++; combo++;
-                const isFire = combo >= COMBO_THRESHOLD;
-                if(isFire) {
-                    document.body.classList.add('on-fire'); keyboardContainer.classList.add('rgb-mode');
-                    document.getElementById('combo').classList.add('fire'); document.getElementById('combo-container').classList.add('high-combo');
-                    if(visualKey) { const r = visualKey.getBoundingClientRect(); spawnFireParticles(r.left + r.width/2, r.top + r.height/2); appWrapper.classList.add('shake-screen'); setTimeout(()=>appWrapper.classList.remove('shake-screen'), 200); }
-                }
-                checkAchievements({ maxCombo: combo }); playSound(isFire ? 'epic' : 'click'); 
-                if (targetChar === ' ') { const words = currentTextStr.split(' '); const completed = currentTextStr.substring(0, currentIndex); const idx = completed.split(' ').length - 1; if (words[idx]) speakWord(words[idx]); } else if (currentIndex === currentTextStr.length - 1) { const words = currentTextStr.split(' '); speakWord(words[words.length-1]); }
-                allCharElements[currentIndex].classList.add('correct'); allCharElements[currentIndex].classList.remove('current'); currentIndex++;
-                if(currentIndex < currentTextStr.length) { allCharElements[currentIndex].classList.add('current'); } else { saveHistory(); setTimeout(initRound, 200); }
-            } else {
-                playSound('error'); combo = 0;
-                document.body.classList.remove('on-fire'); keyboardContainer.classList.remove('rgb-mode');
-                document.getElementById('combo').classList.remove('fire'); document.getElementById('combo-container').classList.remove('high-combo');
-                allCharElements[currentIndex].classList.add('wrong'); 
-                if(visualKey) { visualKey.classList.add('wrong-shake'); setTimeout(()=>visualKey.classList.remove('wrong-shake'), 300); }
-            }
-            document.getElementById('combo').innerText = combo; document.getElementById('accuracy').innerText = Math.round((correctKeys/totalKeys)*100) + '%'; if(startTime) document.getElementById('wpm').innerText = Math.round((correctKeys/5)/((Date.now()-startTime)/60000));
-            updateHandsPosition(); autoScroll(); 
+        // 辅助函数
+        function toggleModal(id,show){document.getElementById(id).style.display=show?'flex':'none';if(id==='history-modal'&&show){loadHistory()}}
+        function renderMyBadges(){const c=document.getElementById('recent-badges-container');c.innerHTML='';userStats.unlocked.slice(-5).reverse().forEach(id=>{const a=achievements.find(x=>x.id===id);if(a){const e=document.createElement('div');e.className='mini-badge';e.onclick=()=>showDetailOverlay(a);e.innerHTML=`${a.icon}<div class="tooltip">${a.name}</div>`;c.appendChild(e)}})}
+        function speakWord(t){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=0.8;window.speechSynthesis.speak(u)}
+        async function loadHistory(){
+            const res=await fetch(`${API_URL}/api/history/${currentUserId}`);const data=await res.json();
+            const list=document.getElementById('history-list-view');list.innerHTML='';data.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.timestamp}</td><td>${r.count}</td><td>${r.wpm}</td><td>${r.acc}</td>`;list.appendChild(tr)});
+            // Render Chart
+            const ctx=document.getElementById('history-chart').getContext('2d');const h=data.reverse();if(h.length<2)return;
+            const w=ctx.canvas.width=document.getElementById('chart-container').offsetWidth;const ht=ctx.canvas.height=250;
+            const p=30;ctx.strokeStyle='#313244';ctx.beginPath();ctx.moveTo(p,p);ctx.lineTo(p,ht-p);ctx.lineTo(w-p,ht-p);ctx.stroke();
+            const getX=i=>p+(i/(h.length-1))*(w-p*2);const getY=v=>(ht-p)-(v/150)*(ht-p*2);
+            [['wpm','#f9a450'],['acc','#a6e3a1']].forEach(([k,c])=>{
+                ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();
+                h.forEach((d,i)=>{const v=k==='acc'?parseInt(d.acc):d.wpm;const x=getX(i),y=getY(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
+            });
         }
-        document.addEventListener('keydown', processInput);
     </script>
 </body>
 </html>
