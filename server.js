@@ -3,28 +3,27 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-// 引入词库
-const wordBanksData = require('./words');
+const wordBanksData = require('./words'); // 1. 引入分离的词库
 
 const app = express();
-const PORT = 3003; 
+const PORT = 3003;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname)); // 托管静态文件
 
-// 获取词库接口
+// 2. 核心接口：获取词库
 app.get('/api/wordbanks', (req, res) => {
     res.json(wordBanksData);
 });
 
+// --- 数据库逻辑 ---
 const dbPath = path.resolve(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) console.error('DB Error:', err.message);
     else console.log('Connected to SQLite');
 });
 
-// 初始化数据库 (包含头像 avatar 和 最高速度 max_wpm)
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +41,7 @@ db.serialize(() => {
         timestamp TEXT,
         FOREIGN KEY(user_id) REFERENCES users(id)
     )`);
-    
+
     db.run(`CREATE TABLE IF NOT EXISTS stats (
         user_id INTEGER PRIMARY KEY,
         totalRounds INTEGER DEFAULT 0,
@@ -60,16 +59,14 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 登录/注册 (支持头像)
+// 登录
 app.post('/api/login', (req, res) => {
     const { name, avatar } = req.body;
     if (!name) return res.status(400).json({ error: 'Name required' });
 
     db.get("SELECT * FROM users WHERE name = ?", [name], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
-        
         if (row) {
-            // 更新头像
             if (avatar && row.avatar !== avatar) {
                 db.run("UPDATE users SET avatar = ? WHERE id = ?", [avatar, row.id]);
                 row.avatar = avatar;
@@ -97,7 +94,7 @@ app.get('/api/users', (req, res) => {
     });
 });
 
-// 保存成绩 (更新 max_wpm)
+// 保存成绩
 app.post('/api/save', (req, res) => {
     const { userId, record, stats } = req.body;
     db.serialize(() => {
@@ -123,13 +120,9 @@ app.get('/api/history/:userId', (req, res) => {
     });
 });
 
-// 获取排行榜 (PK榜)
+// 排行榜
 app.get('/api/leaderboard', (req, res) => {
-    const query = `
-        SELECT u.name, u.avatar, s.max_wpm, s.totalWords, s.totalPerfectRounds
-        FROM stats s
-        JOIN users u ON s.user_id = u.id
-    `;
+    const query = `SELECT u.name, u.avatar, s.max_wpm, s.totalWords, s.totalPerfectRounds FROM stats s JOIN users u ON s.user_id = u.id`;
     db.all(query, (err, rows) => {
         if (err) return res.status(500).json([]);
         res.json(rows);

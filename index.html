@@ -10,8 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#11111b">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==">
-    <link rel="manifest" href='data:application/manifest+json;base64,ewogICJuYW1lIjogIlR5cGUgTWFzdGVyIiwKICAic2hvcnRfbmFtZSI6ICJUeXBlIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxMTExMWIiLAogICJ0aGVtZV9jb2xvciI6ICIjMTExMTFiIgp9'>
-
+    
     <style>
         :root {
             --bg-color: #11111b; --key-bg: #313244; --text-color: #cdd6f4;
@@ -21,16 +20,14 @@
         body { background: var(--bg-color); color: var(--text-color); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
         #app-wrapper { width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
 
+        /* Login Screen */
         #login-screen { position: absolute; inset: 0; background: #11111b; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .user-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 800px; margin-bottom: 40px; }
-        .user-card {
-            background: #1e1e2e; border: 2px solid #313244; border-radius: 16px; width: 100px; padding: 15px;
-            display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s;
-        }
+        .user-card { background: #1e1e2e; border: 2px solid #313244; border-radius: 16px; width: 100px; padding: 15px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
         .user-card:hover { border-color: var(--highlight-color); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(249,164,80,0.3); }
         .user-avatar-big { font-size: 3rem; margin-bottom: 10px; }
         .user-name { font-weight: bold; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
-
+        
         .new-user-box { background: #181825; padding: 20px; border-radius: 16px; border: 1px solid #313244; text-align: center; }
         .avatar-selector { display: flex; gap: 10px; margin: 15px 0; justify-content: center; }
         .avatar-option { font-size: 1.5rem; cursor: pointer; opacity: 0.5; transition: 0.2s; filter: grayscale(1); }
@@ -38,12 +35,12 @@
         .user-input { padding: 10px; border-radius: 8px; border: 1px solid #45475a; background: #313244; color: #fff; text-align: center; width: 150px; }
         .add-btn { background: var(--highlight-color); border: none; padding: 10px 20px; border-radius: 8px; color: #1e1e2e; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
+        /* Game Screen */
         #start-screen { position: absolute; inset: 0; background: rgba(17,17,27,0.98); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .top-bar { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
         .icon-btn { background: rgba(255,255,255,0.1); border: 1px solid #45475a; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
         .icon-btn:hover { background: rgba(255,255,255,0.2); }
         .pk-btn { border-color: var(--highlight-color); color: var(--highlight-color); }
-
         .current-user-badge { position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 10px; font-size: 1.2rem; }
         
         .recent-badges { display: flex; gap: 15px; margin-bottom: 30px; min-height: 80px; }
@@ -57,6 +54,7 @@
         .start-btn { padding: 15px 50px; font-size: 1.5rem; background: var(--highlight-color); border: none; border-radius: 12px; cursor: pointer; font-weight: bold; box-shadow: 0 0 20px rgba(249,164,80,0.4); animation: pulse 2s infinite; }
         @keyframes pulse { 0%{transform:scale(1);} 50%{transform:scale(1.05);} 100%{transform:scale(1);} }
 
+        /* Modals */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2500; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background: var(--modal-bg); width: 600px; max-width: 90%; border-radius: 20px; padding: 30px; border: 1px solid #45475a; max-height: 80vh; overflow-y: auto; position: relative; }
         .close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #6c7086; font-size: 1.5rem; cursor: pointer; }
@@ -71,6 +69,10 @@
         .rank-name { flex: 1; color: #fff; font-weight: bold; }
         .rank-score { font-family: monospace; font-size: 1.2rem; color: var(--highlight-color); }
 
+        .game-exit-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid #45475a; color: #6c7086; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; z-index: 100; }
+        .game-exit-btn:hover { border-color: #f38ba8; color: #f38ba8; }
+
+        /* Game UI */
         .display-area { width: 80%; height: 140px; background: #181825; border-radius: 16px; display: flex; align-items: center; overflow: hidden; position: relative; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
         #display-track { display: flex; align-items: flex-end; padding-left: 50%; transition: transform 0.2s cubic-bezier(0.2,0,0.2,1); }
         .word-block { display: flex; flex-direction: column; align-items: center; margin-right: 40px; }
@@ -100,13 +102,19 @@
         .legend-item { display: flex; align-items: center; gap: 5px; }
         .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-        .game-exit-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid #45475a; color: #6c7086; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; z-index: 100; }
-        .game-exit-btn:hover { border-color: #f38ba8; color: #f38ba8; }
-        
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--correct-color); color: #1e1e2e; padding: 10px 20px; border-radius: 20px; font-weight: bold; opacity: 0; transition: opacity 0.5s; pointer-events: none; z-index: 2000; }
         .toast.show { opacity: 1; }
         
-        /* 触摸事件不触发缩放 */
+        /* Overlays */
+        #achievement-overlay, #detail-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; flex-direction: column; align-items: center; justify-content: center; animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop-in { from{transform: scale(0.8); opacity: 0;} to{transform: scale(1); opacity: 1;} }
+        .achievement-card { background: #1e1e2e; padding: 30px 40px; border-radius: 20px; border: 3px solid var(--highlight-color); text-align: center; box-shadow: 0 0 40px rgba(249, 164, 80, 0.3); position: relative; z-index: 3002; transition: all 0.8s ease-in-out; max-width: 90%; }
+        .achievement-icon { font-size: 4rem; display: block; margin-bottom: 15px; animation: bounce 1s infinite; }
+        .achievement-title { font-size: 1.5rem; color: #fff; margin-bottom: 10px; font-weight: bold; }
+        .achievement-desc { font-size: 1rem; color: #cdd6f4; line-height: 1.4; }
+        #fireworks-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3001; }
+        
+        /* 触摸优化 */
         .key { touch-action: manipulation; }
     </style>
 </head>
@@ -212,7 +220,10 @@
     <div id="toast" class="toast">记录已保存</div>
 
     <script>
-        const API_URL = "https://dz.509992828.de5.net";
+        // 🌟 核心连接配置：自动适配当前域名
+        // 如果 dz.509992828.de5.net 是您的 Nginx 反向代理地址，指向后端 3003
+        // 那么设为空字符串 "" 会自动使用相对路径 /api/...
+        const API_URL = "";
 
         let currentUser=null, currentUserId=null, currentAvatar='🐶', userStats={}, leaderboardData=[], wordBanks={};
         let currentWordsData=[], currentTextStr="", currentIndex=0, correctKeys=0, totalKeys=0, combo=0, startTime=null, timerInterval=null, sessionStartTime=null, allCharElements=[];
@@ -241,19 +252,17 @@
             if(['Shift','Alt','Control','Meta','CapsLock'].includes(e.key))return;
             if(!startTime)startTime=Date.now();
             const key=e.key.length===1?e.key.toLowerCase():e.key;const target=currentTextStr[currentIndex]?.toLowerCase();
-            const vKey=document.querySelector(`.key[data-key="${key}"]`)||document.querySelector(`.key[data-key="${e.key}"]`);
-            if(vKey){vKey.classList.add('active');setTimeout(()=>vKey.classList.remove('active'),100);const rect=vKey.getBoundingClientRect();const ripple=document.createElement('div');ripple.className='key-ripple';ripple.style.left=(rect.left+rect.width/2)+'px';ripple.style.top=(rect.top+rect.height/2)+'px';document.body.appendChild(ripple);setTimeout(()=>ripple.remove(),600)}
+            const visualKey=document.querySelector(`.key[data-key="${key}"]`)||document.querySelector(`.key[data-key="${e.key}"]`);
+            if(visualKey){visualKey.classList.add('active');setTimeout(()=>visualKey.classList.remove('active'),100);const rect=visualKey.getBoundingClientRect();const ripple=document.createElement('div');ripple.className='key-ripple';ripple.style.left=(rect.left+rect.width/2)+'px';ripple.style.top=(rect.top+rect.height/2)+'px';document.body.appendChild(ripple);setTimeout(()=>ripple.remove(),600)}
             if(key==='Backspace'){if(currentIndex>0){currentIndex--;allCharElements[currentIndex].className=allCharElements[currentIndex].innerText===' '?'char space-char':'char';allCharElements[currentIndex].classList.add('current');if(allCharElements[currentIndex+1])allCharElements[currentIndex+1].classList.remove('current');autoScroll()}return}
             if(!target)return; totalKeys++;
             if(key===target){
                 correctKeys++;combo++;allCharElements[currentIndex].classList.add('correct');allCharElements[currentIndex].classList.remove('current');
-                if(combo>=20){document.body.classList.add('on-fire');document.getElementById('keyboard-container').classList.add('rgb-mode');if(vKey){for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';document.body.appendChild(p);const s=Math.random()*8+4;p.style.width=s+'px';p.style.height=s+'px';p.style.background=Math.random()>0.7?'#fff':'#f9e2af';const rect=vKey.getBoundingClientRect();p.style.left=(rect.left+rect.width/2)+'px';p.style.top=(rect.top+rect.height/2)+'px';const a=Math.random()*Math.PI*2,v=Math.random()*150+50;p.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${Math.cos(a)*v}px,${Math.sin(a)*v}px)`,opacity:0}],{duration:600}).onfinish=()=>p.remove()}}}
+                if(combo>=20){document.body.classList.add('on-fire');document.getElementById('keyboard-container').classList.add('rgb-mode');if(visualKey){for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';document.body.appendChild(p);const s=Math.random()*8+4;p.style.width=s+'px';p.style.height=s+'px';p.style.background=Math.random()>0.7?'#fff':'#f9e2af';const rect=visualKey.getBoundingClientRect();p.style.left=(rect.left+rect.width/2)+'px';p.style.top=(rect.top+rect.height/2)+'px';const a=Math.random()*Math.PI*2,v=Math.random()*150+50;p.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${Math.cos(a)*v}px,${Math.sin(a)*v}px)`,opacity:0}],{duration:600}).onfinish=()=>p.remove()}}}
                 checkAchievements({maxCombo:combo});
-                // 单词发音逻辑
                 let spaceCount=0;for(let i=0;i<currentIndex;i++)if(currentTextStr[i]===' ')spaceCount++;
                 if(target===' '){if(currentWordsData[spaceCount])speakWord(currentWordsData[spaceCount].en)}
                 else if(currentIndex===currentTextStr.length-1){if(currentWordsData[currentWordsData.length-1])speakWord(currentWordsData[currentWordsData.length-1].en)}
-                
                 currentIndex++;if(currentIndex<currentTextStr.length)allCharElements[currentIndex].classList.add('current');
                 else{const wpm=Math.round((correctKeys/5)/((Date.now()-startTime)/60000));const acc=Math.round((correctKeys/totalKeys)*100);saveRound(wpm,acc)}
             }else{combo=0;document.body.classList.remove('on-fire');document.getElementById('keyboard-container').classList.remove('rgb-mode');allCharElements[currentIndex].classList.add('wrong')}
@@ -267,15 +276,35 @@
         async function loadHistory(){
             const res=await fetch(`${API_URL}/api/history/${currentUserId}`);const data=await res.json();
             const list=document.getElementById('history-list-view');list.innerHTML='';data.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.timestamp}</td><td>${r.count}</td><td>${r.wpm}</td><td>${r.acc}</td>`;list.appendChild(tr)});
-            // Render Chart
             const ctx=document.getElementById('history-chart').getContext('2d');const h=data.reverse();if(h.length<2)return;
             const w=ctx.canvas.width=document.getElementById('chart-container').offsetWidth;const ht=ctx.canvas.height=250;
             const p=30;ctx.strokeStyle='#313244';ctx.beginPath();ctx.moveTo(p,p);ctx.lineTo(p,ht-p);ctx.lineTo(w-p,ht-p);ctx.stroke();
             const getX=i=>p+(i/(h.length-1))*(w-p*2);const getY=v=>(ht-p)-(v/150)*(ht-p*2);
+            
+            const points=[];
             [['wpm','#f9a450'],['acc','#a6e3a1']].forEach(([k,c])=>{
                 ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();
-                h.forEach((d,i)=>{const v=k==='acc'?parseInt(d.acc):d.wpm;const x=getX(i),y=getY(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
+                h.forEach((d,i)=>{const v=k==='acc'?parseInt(d.acc):d.wpm;const x=getX(i),y=getY(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);ctx.fillStyle=c;ctx.fillRect(x-2,y-2,4,4);
+                if(!points[i])points[i]={x:x,data:d};points[i][k]=v;});ctx.stroke();
             });
+
+            ctx.canvas.onmousemove=(e)=>{
+                const rect=ctx.canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;
+                let closest=null,minDist=1000;
+                points.forEach(p=>{const dist=Math.abs(p.x-mouseX);if(dist<minDist){minDist=dist;closest=p}});
+                ctx.clearRect(0,0,w,ht);
+                // Re-draw base chart (simplified for inline)
+                ctx.strokeStyle='#313244';ctx.beginPath();ctx.moveTo(p,p);ctx.lineTo(p,ht-p);ctx.lineTo(w-p,ht-p);ctx.stroke();
+                [['wpm','#f9a450'],['acc','#a6e3a1']].forEach(([k,c])=>{ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();h.forEach((d,i)=>{const v=k==='acc'?parseInt(d.acc):d.wpm;const x=getX(i),y=getY(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);ctx.fillStyle=c;ctx.fillRect(x-2,y-2,4,4)});ctx.stroke()});
+
+                if(closest&&minDist<50){
+                    ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(closest.x,p);ctx.lineTo(closest.x,ht-p);ctx.stroke();
+                    const tx=closest.x-60<0?closest.x+10:closest.x-60;
+                    ctx.fillStyle="rgba(0,0,0,0.8)";ctx.fillRect(tx,10,120,60);ctx.strokeStyle="#45475a";ctx.strokeRect(tx,10,120,60);
+                    ctx.fillStyle="#fff";ctx.font="12px sans-serif";ctx.fillText(`WPM: ${closest.wpm}`,tx+10,30);ctx.fillText(`ACC: ${closest.acc}`,tx+10,45);
+                    ctx.fillStyle="#6c7086";ctx.font="10px sans-serif";ctx.fillText(closest.data.timestamp,tx+10,60);
+                }
+            }
         }
     </script>
 </body>
