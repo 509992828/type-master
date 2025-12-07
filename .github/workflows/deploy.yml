@@ -15,7 +15,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          port:5522
+          port: 5522
           script: |
             cd /usr/games/dazilianxi
             git pull origin main
